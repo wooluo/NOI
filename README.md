@@ -20,7 +20,9 @@
 
 ## 🚀 使用方法
 
-直接用浏览器打开 [`NOI基础知识练习.html`](./NOI基础知识练习.html) 即可，无需安装任何环境。
+**在线访问（GitHub Pages）：** <https://wooluo.github.io/NOI/>
+
+本地使用：直接用浏览器打开 [`NOI基础知识练习.html`](./NOI基础知识练习.html) 即可，无需安装任何环境。
 
 ## 📁 目录结构
 
