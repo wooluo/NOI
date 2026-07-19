@@ -1,5 +1,7 @@
 # 原始资料与无关文件（不纳入仓库）
 *.pdf
+# 例外：培训手册 PDF 需要展示
+!动态规划/手册/神奇的动态规划-培训手册.pdf
 *.pptx
 .DS_Store
 __MACOSX/
@@ -8,3 +10,5 @@ pptx_extracted/
 .claude/
 # 本地构建脚本（生成 代码演示.html 用，含本机绝对路径）
 build_demo.py
+# 手册 PDF 的样式表（本地构建用）
+manual_style.css
