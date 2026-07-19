@@ -2,29 +2,123 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>NOI 2026 基础知识练习系统</title>
+<title>NOI 2026 学习中心</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- GitHub Pages 入口：自动跳转到主程序文件 -->
-<meta http-equiv="refresh" content="0; url=NOI基础知识练习.html">
-<link rel="canonical" href="NOI基础知识练习.html">
+<link rel="canonical" href="index.html">
 <style>
   :root{color-scheme:light dark}
-  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
-       background:linear-gradient(160deg,#1e293b,#0f172a);color:#cbd5e1;text-align:center}
-  .box{padding:32px}
-  .s{width:42px;height:42px;border:4px solid rgba(255,255,255,.2);border-top-color:#818cf8;border-radius:50%;
-     animation:sp 1s linear infinite;margin:0 auto 18px}
-  @keyframes sp{to{transform:rotate(360deg)}}
-  a{color:#818cf8}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:linear-gradient(160deg,#1e293b,#0f172a);color:#e2e8f0;}
+  /* 顶部 */
+  header{padding:46px 20px 26px;text-align:center;}
+  header .logo{font-size:2.6em;}
+  header h1{margin:8px 0 4px;font-size:1.7em;font-weight:800;
+            background:linear-gradient(90deg,#818cf8,#f472b6,#fbbf24);
+            -webkit-background-clip:text;background-clip:text;color:transparent;}
+  header p{margin:0;color:#94a3b8;font-size:.95em;}
+  /* 容器 */
+  .wrap{max-width:980px;margin:0 auto;padding:10px 20px 60px;}
+  /* 两大板块 */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:10px;}
+  @media(max-width:760px){.cards{grid-template-columns:1fr;}}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+        border-radius:18px;padding:26px 24px;transition:.18s;}
+  .card:hover{background:rgba(255,255,255,.07);border-color:rgba(129,140,248,.45);
+              transform:translateY(-3px);}
+  .card h2{margin:0 0 4px;font-size:1.25em;display:flex;align-items:center;gap:10px;}
+  .card .ico{font-size:1.5em;}
+  .card .desc{color:#94a3b8;font-size:.85em;margin:0 0 16px;}
+  .learn{border-top:3px solid #818cf8;}
+  .exam{border-top:3px solid #f472b6;}
+  /* 子链接列表 */
+  .links{list-style:none;padding:0;margin:0;}
+  .links li{margin:8px 0;}
+  .links a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;
+           background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+           color:#e2e8f0;text-decoration:none;transition:.15s;font-size:.95em;}
+  .links a:hover{background:rgba(129,140,248,.16);border-color:rgba(129,140,248,.5);}
+  .links a .e{font-size:1.4em;width:30px;text-align:center;flex-shrink:0;}
+  .links a .t{font-weight:700;}
+  .links a .s{display:block;font-size:.74em;color:#94a3b8;font-weight:400;margin-top:2px;}
+  .links a .arr{margin-left:auto;color:#64748b;}
+  .tag{display:inline-block;font-size:.66em;background:rgba(34,197,94,.18);color:#86efac;
+       padding:2px 9px;border-radius:999px;margin-left:8px;font-weight:700;}
+  /* 底部 */
+  footer{text-align:center;color:#475569;font-size:.78em;padding:24px 20px 40px;}
+  footer a{color:#64748b;text-decoration:none;}
+  footer a:hover{color:#94a3b8;}
+  .hint{text-align:center;color:#64748b;font-size:.8em;margin-top:18px;}
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="s"></div>
-  <p>正在加载 NOI 2026 基础知识练习系统……</p>
-  <p style="font-size:13px;color:#64748b">若没有自动跳转，请 <a href="NOI基础知识练习.html">点这里</a></p>
+<header>
+  <div class="logo">🏆</div>
+  <h1>NOI 2026 学习中心</h1>
+  <p>课件学习 · 考试练习 · 一站搞定</p>
+</header>
+
+<div class="wrap">
+  <div class="cards">
+
+    <!-- 课件学习 -->
+    <div class="card learn">
+      <h2><span class="ico">📚</span> 课件学习</h2>
+      <p class="desc">动态规划启蒙 · 写给刚小学毕业的同学</p>
+      <ul class="links">
+        <li>
+          <a href="动态规划/代码演示.html">
+            <span class="e">💻</span>
+            <span><span class="t">代码演示</span><span class="s">看代码 + ▶ 模拟运行结果，浏览器直接玩</span></span>
+            <span class="arr">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="动态规划/课件/神奇的动态规划-课件.html">
+            <span class="e">🖥️</span>
+            <span><span class="t">课件幻灯片</span><span class="s">31 页互动课件，方向键翻页</span></span>
+            <span class="arr">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="动态规划/手册/神奇的动态规划-培训手册.md">
+            <span class="e">📖</span>
+            <span><span class="t">培训手册</span><span class="s">完整文字版，6 章 + 速查卡</span></span>
+            <span class="arr">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="动态规划/代码/">
+            <span class="e">🐍</span>
+            <span><span class="t">Python 代码</span><span class="s">7 个程序，含运行说明</span></span>
+            <span class="arr">→</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 考试练习 -->
+    <div class="card exam">
+      <h2><span class="ico">✍️</span> 考试练习</h2>
+      <p class="desc">NOI 基础知识 · 自测练习系统</p>
+      <ul class="links">
+        <li>
+          <a href="NOI基础知识练习.html">
+            <span class="e">📝</span>
+            <span><span class="t">NOI 基础知识练习</span><span class="s">选择题 / 判断题，在线答题判分</span></span>
+            <span class="arr">→</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="hint">💡 提示：课件与代码演示首次打开需联网（加载样式和高亮库）。</p>
 </div>
-<script>location.replace("NOI基础知识练习.html");</script>
+
+<footer>
+  NOI 2026 学习中心 · <a href="README.md">README</a>
+</footer>
 </body>
 </html>

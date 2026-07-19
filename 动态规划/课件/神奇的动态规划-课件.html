@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 神奇的动态规划 🌟</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css" id="theme">
+<style>
+  :root{
+    --c1:#5b8def;   /* 蓝 */
+    --c2:#ff7eb3;   /* 粉 */
+    --c3:#ffd166;   /* 黄 */
+    --c4:#06d6a0;   /* 绿 */
+    --c5:#9b5de5;   /* 紫 */
+    --ink:#2b2d42;
+    --soft:#f4f7fe;
+  }
+  .reveal{ font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; color:var(--ink); }
+  .reveal h1,.reveal h2,.reveal h3,.reveal h4{ text-transform:none; font-weight:800; }
+  .reveal section{ text-align:left; }
+  .reveal .slides section.cover{ text-align:center; }
+  /* 封面 */
+  .cover-box{
+    display:inline-block; padding:30px 60px; border-radius:24px;
+    background:linear-gradient(135deg,var(--c1),var(--c5));
+    color:#fff; box-shadow:0 18px 50px rgba(91,141,239,.4);
+  }
+  .cover-box h1{ font-size:2.1em; margin:0; line-height:1.3; }
+  .cover-sub{ margin-top:26px; font-size:.9em; color:#555; }
+  /* 通用卡片 */
+  .card{ background:var(--soft); border-radius:16px; padding:18px 24px; margin:10px 0; border:2px solid #e3e9f7; }
+  .tag{ display:inline-block; padding:4px 14px; border-radius:999px; color:#fff; font-weight:700; font-size:.65em; vertical-align:middle; }
+  .t-blue{background:var(--c1);} .t-pink{background:var(--c2);} .t-yellow{background:var(--c3);color:#7a5b00;}
+  .t-green{background:var(--c4);} .t-purple{background:var(--c5);}
+  /* 小贴士 */
+  .tip{ background:#fff7e6; border-left:8px solid var(--c3); border-radius:10px; padding:14px 20px; margin:14px 0; }
+  .tip.pink{ background:#fff0f5; border-left-color:var(--c2); }
+  .tip.blue{ background:#eef4ff; border-left-color:var(--c1); }
+  .tip.green{ background:#e7fbf3; border-left-color:var(--c4); }
+  /* 方程块 */
+  .eq{ font-family:"SF Mono",Consolas,Menlo,monospace; background:#1f2430; color:#ffeaa7;
+       padding:16px 24px; border-radius:12px; font-size:.8em; display:inline-block; }
+  .eq b{ color:#7bed9f; }
+  .eq i{ color:#ff7eb3; font-style:normal; }
+  /* 楼梯 */
+  .stairs{ display:flex; align-items:flex-end; gap:6px; margin:14px 0; }
+  .step{ width:54px; background:var(--c1); color:#fff; border-radius:8px 8px 0 0; display:flex;
+         align-items:center; justify-content:center; font-weight:800; }
+  /* 表格 */
+  table.dp{ border-collapse:collapse; font-size:.6em; margin:10px 0; }
+  table.dp th,table.dp td{ border:1px solid #cdd7ea; padding:6px 10px; text-align:center; }
+  table.dp th{ background:var(--c1); color:#fff; }
+  table.dp td.h{ background:#fff7e6; font-weight:800; }
+  table.dp td.ans{ background:#e7fbf3; font-weight:800; color:#0a7d51; }
+  /* 物品 */
+  .items{ display:flex; gap:14px; flex-wrap:wrap; }
+  .item{ width:96px; background:#fff; border:3px solid var(--c2); border-radius:14px; padding:10px; text-align:center; }
+  .item .emo{ font-size:2em; }
+  .item .wv{ font-size:.65em; color:#666; margin-top:4px; }
+  /* 石子 */
+  .piles{ display:flex; gap:18px; align-items:flex-end; margin:16px 0; }
+  .pile{ width:60px; text-align:center; }
+  .pile .stones{ display:flex; flex-wrap:wrap; gap:3px; justify-content:center; }
+  .pile .s{ width:11px;height:11px;border-radius:50%;background:var(--c5); }
+  .pile .lbl{ font-size:.7em; color:#555; margin-top:4px; }
+  /* 步骤数字 */
+  .stepnum{ display:inline-block; width:34px;height:34px;line-height:34px;text-align:center;border-radius:50%;
+            background:var(--c4);color:#fff;font-weight:800;margin-right:8px; }
+  .small{ font-size:.65em; color:#666; }
+  code.inline{ background:#eef4ff; color:#21408a; padding:2px 8px; border-radius:6px; font-size:.8em;}
+  .reveal pre{ font-size:.5em; box-shadow:none; }
+  .check{ color:#0a7d51;font-weight:800; }
+  .cross{ color:#d6336c;font-weight:800; }
+  .frag{ } /* 占位 */
+  .titlebar{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .titlebar .dot{ width:14px;height:14px;border-radius:50%;background:var(--c2); }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- ============ 封面 ============ -->
+<section class="cover">
+  <div class="cover-box">
+    <h1>🌟 神奇的动态规划 🌟<br>经典动规及模板</h1>
+  </div>
+  <p class="cover-sub">👦👧 写给刚小学毕业的你 · 算法启蒙第一课<br>
+     📖 配套：培训手册 + Python 代码</p>
+  <p class="small" style="margin-top:40px;">👉 按 <b>→ ← ↑ ↓</b> 或 <b>空格</b> 翻页　·　按 <b>S</b> 看总览　·　按 <b>Esc</b> 退出总览</p>
+</section>
+
+<!-- ============ 目录 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🗺️ 今天我们要学什么？</h2></div>
+  <div class="card">
+    <p><span class="stepnum">1</span><b>认识动态规划</b> —— 从爬楼梯开始 🪜</p>
+    <p><span class="stepnum">2</span><b>三步法 & 三要素</b> —— 动规的"内功心法" 🧘</p>
+    <p><span class="stepnum">3</span><b>一维模板</b> —— 最大子段和 ➕ / 最长上升子序列 📈</p>
+    <p><span class="stepnum">4</span><b>二维模板</b> —— 最长公共子序列 🤝 / 背包问题 🎒</p>
+    <p><span class="stepnum">5</span><b>区间模板</b> —— 石子合并 🪨</p>
+    <p><span class="stepnum">6</span><b>总结 & 挑战</b> 🏆</p>
+  </div>
+</section>
+
+<!-- ============ 小故事 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🎒 先听个小故事：去春游！</h2></div>
+  <p>小明的背包<b>最多装 10 斤</b>，商店里有 4 种好吃的，怎么挑才<b>最值</b>？</p>
+  <div class="items">
+    <div class="item"><div class="emo">🍪</div>饼干<div class="wv">价值1 · 重2斤</div></div>
+    <div class="item"><div class="emo">🍎</div>苹果<div class="wv">价值3 · 重3斤</div></div>
+    <div class="item"><div class="emo">🍫</div>巧克力<div class="wv">价值9 · 重7斤</div></div>
+    <div class="item"><div class="emo">🧀</div>奶酪<div class="wv">价值5 · 重4斤</div></div>
+  </div>
+  <div class="tip pink">
+    🤔 瞎试要列 <b>2×2×2×2 = 16</b> 种挑法！要是 30 种东西呢？<b>2³⁰ ≈ 10 亿种</b>，电脑都算半天！<br>
+    有没有更聪明的办法？—— 有！这就是<b>动态规划</b>！
+  </div>
+</section>
+
+<!-- ============ 什么是DP ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>💡 什么是动态规划（DP）？</h2></div>
+  <div class="tip" style="font-size:1.15em;">
+    <b>别傻傻地一遍遍重复算 —— 把算过的答案"记下来"，下次直接用！</b>
+  </div>
+  <div class="card">
+    就像你背了<b>九九乘法表</b> 🟦🟦🟦<br>
+    以后算 <code class="inline">7×8</code>，不用再一个一个加，张口就来 <b>56</b>！
+  </div>
+  <p class="small">动态规划 = 把大问题拆成小问题 + 把小问题的答案存起来，不重复劳动。</p>
+</section>
+
+<!-- ============ 爬楼梯 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🪜 第 1 章：爬楼梯</h2></div>
+  <p class="card" style="font-size:1.05em;">
+    🎯 <b>问题：</b>有一段楼梯，你<b>一次能上 1 阶，或者上 2 阶</b>。<br>
+    爬到<b>第 n 阶</b>，一共有多少种不同的爬法？
+  </p>
+  <div class="stairs">
+    <div class="step" style="height:50px;">1</div>
+    <div class="step" style="height:100px;">2</div>
+    <div class="step" style="height:150px;">3</div>
+    <div class="step" style="height:200px;">4</div>
+  </div>
+  <p class="small">第 1 阶：1 种 &nbsp;|&nbsp; 第 2 阶：2 种 &nbsp;|&nbsp; 第 3 阶：？ &nbsp;|&nbsp; 第 4 阶：？</p>
+</section>
+
+<!-- ============ 爬楼梯 找规律 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧩 秘诀：找规律！</h2></div>
+  <p>想爬到<b>第 n 阶</b>，你最后一步从哪跨上来？只有两种可能：</p>
+  <div class="card">
+    👈 从<b>第 n−1 阶</b>跨 <b>1</b> 阶上来<br>
+    👈 从<b>第 n−2 阶</b>跨 <b>2</b> 阶上来
+  </div>
+  <div class="eq" style="font-size:1em;margin-top:10px;">
+    爬到第 <b>n</b> 阶的走法 = 爬到第 <b>n−1</b> 阶 + 爬到第 <b>n−2</b> 阶
+  </div>
+  <div class="tip green">🌟 <b>把大问题拆成小问题，先解决小的，再推出大的！</b></div>
+</section>
+
+<!-- ============ 爬楼梯 填表 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 一格一格填</h2></div>
+  <table class="dp">
+    <tr><th>楼梯阶数</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+    <tr><td class="h">走法数</td><td>1</td><td>2</td><td class="ans">3</td><td class="ans">5</td><td class="ans">8</td><td class="ans">13</td></tr>
+  </table>
+  <div class="card small">
+    第 3 阶 = 2 + 1 = <b>3</b> ✅ &nbsp;&nbsp; 第 4 阶 = 3 + 2 = <b>5</b> ✅ &nbsp;&nbsp; 第 5 阶 = 5 + 3 = <b>8</b> ✅
+  </div>
+  <div class="tip">🐰 这就是大名鼎鼎的<b>斐波那契数列</b>（兔子数列）！</div>
+</section>
+
+<!-- ============ 三步法 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>📋 动规"三步法"</h2></div>
+  <div class="card">
+    <p><span class="stepnum" style="background:var(--c1);">1</span><b>写状态转移方程</b>（找规律 —— 这是灵魂！）<br>
+    <span class="small">爬楼梯：第 n 阶 = 第 n−1 阶 + 第 n−2 阶</span></p>
+    <p><span class="stepnum" style="background:var(--c2);">2</span><b>初始化</b>（最开头的几个状态先定好）<br>
+    <span class="small">第 1 阶 = 1，第 2 阶 = 2</span></p>
+    <p><span class="stepnum" style="background:var(--c5);">3</span><b>按方程一步步算</b>（小的算完算大的）<br>
+    <span class="small">第 3 阶 = 2+1 = 3，第 4 阶 = 3+2 = 5 ……</span></p>
+  </div>
+  <p class="small">名词：<code class="inline">状态</code>=每步的答案 · <code class="inline">状态转移</code>=从上一步推到下一步</p>
+</section>
+
+<!-- ============ 三要素 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧱 动规"三要素"</h2></div>
+  <div class="card">
+    <p><span class="tag t-blue">最优子结构</span> 大问题的最优解，能由小问题的最优解<b>拼出来</b>。🏗️</p>
+    <p><span class="tag t-pink">无后效性</span> 算当前问题只用到前面小问题的<b>答案</b>，<b>不用管它怎么来的</b>。🚶</p>
+    <p><span class="tag t-green">重叠子问题</span> 同一个小问题被<b>反复用到</b>，存起来就省时间。🔁</p>
+  </div>
+  <div class="tip green">✅ 有<b>最优子结构</b> + <b>无后效性</b> 就能用动规！</div>
+</section>
+
+<!-- ============ 最大子段和 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>➕ 3.1 最大子段和</h2></div>
+  <p class="card">🎯 从一串数字里挑<b>连续的一段</b>，让它们的<b>和最大</b>。</p>
+  <div class="eq" style="font-size:1em;">1 &nbsp; −2 &nbsp; <b>5</b> &nbsp; <b>3</b> &nbsp; −4 &nbsp; <b>5</b></div>
+  <table class="dp" style="font-size:.75em;">
+    <tr><th>挑哪段</th><th>1,−2,5</th><th>5,3,−4,5</th><th>5,3</th></tr>
+    <tr><td class="h">和</td><td>4</td><td class="ans">9 🎯</td><td>8</td></tr>
+  </table>
+  <p class="small">🤔 答案到底是多少？用动规一算就知道！</p>
+</section>
+
+<!-- ============ 最大子段和 方程 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>💡 思路 & 方程</h2></div>
+  <p>设 <code class="inline">dp[i]</code> = 以第 i 个数字<b>结尾</b>的最大子段和。</p>
+  <p>第 i 个数要么<b>接着前面那段</b>，要么<b>自己单独开一段</b>，取较大的：</p>
+  <div class="eq" style="font-size:1.1em;">
+    dp[i] = max( <i>dp[i−1] + a[i]</i> , &nbsp; <b>a[i]</b> )
+  </div>
+  <div class="card small">
+    初始：<code class="inline">dp[0] = a[0]</code> &nbsp;&nbsp; 最终答案：所有 dp[i] 里<b>最大</b>的那个。
+  </div>
+</section>
+
+<!-- ============ 最大子段和 算 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 算一算</h2></div>
+  <table class="dp">
+    <tr><th>i</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+    <tr><td class="h">a[i]</td><td>1</td><td>−2</td><td>5</td><td>3</td><td>−4</td><td>5</td></tr>
+    <tr><td class="h">dp[i]</td><td>1</td><td>−1</td><td>5</td><td>8</td><td>4</td><td class="ans">9</td></tr>
+  </table>
+  <div class="tip green">✅ 最大子段和 = <b>9</b>（对应连续段 <code class="inline">5  3  −4  5</code>）</div>
+</section>
+
+<!-- ============ LIS 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>📈 3.2 最长上升子序列 (LIS)</h2></div>
+  <p class="card">🎯 选一些数（<b>不用挨着</b>，顺序不能乱），让它们<b>从左到右越来越大</b>，最长能多长？</p>
+  <div class="eq" style="font-size:1em;">5 &nbsp; 3 &nbsp; <b style="color:#7bed9f;">9</b> &nbsp; <b style="color:#7bed9f;">11</b> &nbsp; 4 &nbsp; 2 &nbsp; <b style="color:#7bed9f;">15</b></div>
+  <p class="small">👆 <code class="inline">5 9 11 15</code>（或 <code class="inline">3 9 11 15</code>）一直在变大，长度 <b>4</b> ✅</p>
+</section>
+
+<!-- ============ LIS 算 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 算一算</h2></div>
+  <p class="small">设 <code class="inline">dp[i]</code> = 以第 i 个数结尾的最长上升长度。看前面比它小的数，长度+1。</p>
+  <div class="eq" style="font-size:.95em;">dp[i] = max( dp[j] + 1 )，对所有 j&lt;i 且 a[j]&lt;a[i]</div>
+  <table class="dp">
+    <tr><th>i</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+    <tr><td class="h">a[i]</td><td>5</td><td>3</td><td>9</td><td>11</td><td>4</td><td>2</td><td>15</td></tr>
+    <tr><td class="h">dp[i]</td><td>1</td><td>1</td><td>2</td><td>3</td><td>2</td><td>1</td><td class="ans">4</td></tr>
+  </table>
+  <div class="tip green">✅ 最长上升子序列长度 = <b>4</b></div>
+</section>
+
+<!-- ============ LCS 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🤝 4.1 最长公共子序列 (LCS)</h2></div>
+  <p class="card">🎯 找<b>两个序列</b>都拥有的最长子序列。</p>
+  <div class="eq" style="font-size:1em;">s1 = a b c b d a b<br>s2 = b d c a b a</div>
+  <p class="small">最长公共子序列：<code class="inline">b c b a</code> 或 <code class="inline">b d a b</code>，长度都是 <b>4</b>。</p>
+</section>
+
+<!-- ============ LCS 两种情况 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>📋 两种情况</h2></div>
+  <p class="small">设 <code class="inline">dp[i][j]</code> = s1 前 i 个 与 s2 前 j 个 的最长公共长度。看两个字符一不一样：</p>
+  <div class="card">
+    <p><span class="tag t-green">① 相同</span> &nbsp; dp[i][j] = <b>dp[i−1][j−1] + 1</b> &nbsp;（对角线 +1）</p>
+    <p><span class="tag t-pink">② 不同</span> &nbsp; dp[i][j] = <b>max(dp[i−1][j], dp[i][j−1])</b> &nbsp;（上、左取大）</p>
+  </div>
+  <div class="tip blue">💡 记忆：<b>相同就看左上角 +1；不同就比上面和左边谁大</b>。</div>
+</section>
+
+<!-- ============ LCS 表格 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 填表格</h2></div>
+  <table class="dp" style="font-size:.55em;">
+    <tr><th></th><th></th><th>a</th><th>b</th><th>c</th><th>b</th><th>d</th><th>a</th><th>b</th></tr>
+    <tr><th></th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><th>b</th><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><th>d</th><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td></tr>
+    <tr><th>c</th><td>0</td><td>0</td><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td></tr>
+    <tr><th>a</th><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+    <tr><th>b</th><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td><td>3</td><td>4</td></tr>
+    <tr><th>a</th><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td><td>4</td><td class="ans">4</td></tr>
+  </table>
+  <div class="tip green">✅ 右下角 <b>4</b> 就是答案！</div>
+</section>
+
+<!-- ============ 0/1背包 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🎒 4.2 0/1 背包</h2></div>
+  <p class="card">🎯 每种物品<b>只有 1 件</b>，拿(1)或不拿(0)，让总价值最高。</p>
+  <div class="items">
+    <div class="item"><div class="emo">🍪</div>饼干<div class="wv">价值1 · 重2</div></div>
+    <div class="item"><div class="emo">🍎</div>苹果<div class="wv">价值3 · 重3</div></div>
+    <div class="item"><div class="emo">🍫</div>巧克力<div class="wv">价值9 · 重7</div></div>
+    <div class="item"><div class="emo">🧀</div>奶酪<div class="wv">价值5 · 重4</div></div>
+  </div>
+  <p class="small">🎒 载重 10 斤。枚举要 2⁴=16 种，太麻烦！</p>
+</section>
+
+<!-- ============ 0/1背包 方程 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>💡 思路 & 方程</h2></div>
+  <p class="small">设 <code class="inline">dp[i][j]</code> = 前 i 种物品、载重 j 时的最大价值。拿还是不拿？</p>
+  <div class="card">
+    <p><span class="tag t-pink">不拿</span> &nbsp; dp[i][j] = <b>dp[i−1][j]</b>（上一种、同样载重）</p>
+    <p><span class="tag t-green">拿</span> &nbsp;&nbsp;&nbsp; 先腾出重量，再加价值<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dp[i][j] = <b>dp[i−1][j−w[i]] + v[i]</b>（看<b>上一行</b>）</p>
+  </div>
+  <div class="eq" style="font-size:1em;">j ≥ w[i] 时： dp[i][j] = max( <i>dp[i−1][j]</i> , <b>dp[i−1][j−w[i]] + v[i]</b> )</div>
+</section>
+
+<!-- ============ 0/1背包 表格 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 填表格（载重 0~10）</h2></div>
+  <table class="dp" style="font-size:.5em;">
+    <tr><th>物品(重,值)</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr>
+    <tr><td class="h">①饼干(2,1)</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td class="h">②苹果(3,3)</td><td>0</td><td>0</td><td>1</td><td>3</td><td>3</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td></tr>
+    <tr><td class="h">③巧克力(7,9)</td><td>0</td><td>0</td><td>1</td><td>3</td><td>3</td><td>4</td><td>4</td><td>9</td><td>9</td><td>10</td><td>10</td></tr>
+    <tr><td class="h">④奶酪(4,5)</td><td>0</td><td>0</td><td>1</td><td>3</td><td>5</td><td>5</td><td>6</td><td>9</td><td>9</td><td>10</td><td class="ans">12</td></tr>
+  </table>
+  <div class="tip green">✅ 最大价值 = <b>12</b>（拿 ②苹果 + ③巧克力）</div>
+</section>
+
+<!-- ============ 贪心 vs 动规 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🔍 小插曲：贪心 vs 动规</h2></div>
+  <div class="card">
+    <p><b>贪心法</b>：每次都挑看起来最划算的（比如先挑价值最高的巧克力）。</p>
+    <p>巧的是，这道题贪心<b>碰巧</b>也得到 12。 <span class="check">✓ 这题对</span></p>
+  </div>
+  <div class="tip pink">
+    ⚠️ <b>但贪心不保证永远对！</b> 换个数字就可能翻车。<br>
+    💪 而<b>动态规划永远给你正确答案</b> —— 这就是它的厉害之处！
+  </div>
+</section>
+
+<!-- ============ 完全背包 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>♻️ 4.3 完全背包</h2></div>
+  <p class="card">🎯 每种物品<b>无限件</b>，想拿几件拿几件！</p>
+  <table class="dp" style="font-size:.7em;">
+    <tr><th></th><th>0/1 背包</th><th>完全背包</th></tr>
+    <tr><td class="h">每种数量</td><td>只有 1 件</td><td>无限件</td></tr>
+    <tr><td class="h">"拿"看哪行</td><td>上一行 dp[i−1][...]</td><td class="ans">本行 dp[i][...]</td></tr>
+  </table>
+  <div class="eq" style="font-size:1em;">j ≥ w[i] 时： dp[i][j] = max( <i>dp[i−1][j]</i> , <b>dp[i][j−w[i]] + v[i]</b> )</div>
+  <p class="small">👆 注意第二个是 <code class="inline">dp[i][...]</code>（本行），这是和 0/1 背包<b>唯一</b>的区别！因为拿完还能再拿。</p>
+</section>
+
+<!-- ============ 完全背包 一维魔法 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧙 一维数组的小魔法</h2></div>
+  <div class="card">
+    <p>用一维数组省空间时，内层循环的方向<b>决定一切</b>：</p>
+    <p>🎒 <b>0/1 背包</b> &nbsp;→&nbsp; 载重 j <b>从大到小</b>（逆序）</p>
+    <p>♻️ <b>完全背包</b> &nbsp;→&nbsp; 载重 j <b>从小到大</b>（正序）</p>
+  </div>
+  <div class="tip">💡 正序让"本行新值"被读到 → 支持同一物品拿多件；逆序保护旧值 → 每物只拿一次。</div>
+  <p class="small">完全背包答案：<b>12</b>（这道题和 0/1 背包恰好一样）</p>
+</section>
+
+<!-- ============ 石子合并 问题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🪨 5.1 石子合并</h2></div>
+  <p class="card">🎯 每次合并<b>相邻两堆</b>，得分 = 合并后这堆的石子数。合并到只剩 1 堆，求<b>最小总得分</b>。</p>
+  <div class="piles">
+    <div class="pile"><div class="stones"><span class="s"></span><span class="s"></span><span class="s"></span><span class="s"></span><span class="s"></span></div><div class="lbl">① 5</div></div>
+    <div class="pile"><div class="stones"><span class="s"></span><span class="s"></span><span class="s"></span></div><div class="lbl">② 3</div></div>
+    <div class="pile"><div class="stones"><span class="s"></span><span class="s"></span><span class="s"></span></div><div class="lbl">③ 3</div></div>
+    <div class="pile"><div class="stones"><span class="s"></span><span class="s"></span><span class="s"></span><span class="s"></span><span class="s"></span></div><div class="lbl">④ 5</div></div>
+  </div>
+</section>
+
+<!-- ============ 石子合并 思路 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>💡 思路：区间动规</h2></div>
+  <p class="small">设 <code class="inline">dp[i][j]</code> = 第 i 堆到第 j 堆合并成一堆的最小得分。最后一步一定是<b>切一刀</b>分成左右两半：</p>
+  <div class="eq" style="font-size:1em;">dp[i][j] = min( <i>dp[i][k]</i> + <b>dp[k+1][j]</b> + 区间总和 )</div>
+  <div class="card small">
+    枚举切点 k（i ≤ k &lt; j）取最小。<br>
+    最后一次大合并的代价 = 这段区间的<b>石子总和</b>（不管怎么切都一样）。
+  </div>
+  <div class="tip blue">🔑 <b>按"区间长度"从小到大算</b>：先算所有长度2的，再长度3……最后整个。</div>
+</section>
+
+<!-- ============ 石子合并 填表 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🧮 一步步填表</h2></div>
+  <div class="card small">
+    <b>长度1</b>：对角线全 0（一堆不用合并）<br>
+    <b>长度2</b>：dp[1][2]=8, dp[2][3]=6, dp[3][4]=8（两堆之和）<br>
+    <b>长度3</b>：dp[1][3]=17, dp[2][4]=17<br>
+    <b>长度4</b>：dp[1][4] = ?（枚举3个切点）
+  </div>
+  <table class="dp" style="font-size:.7em;">
+    <tr><th>dp[i][j]</th><th>j=1</th><th>j=2</th><th>j=3</th><th>j=4</th></tr>
+    <tr><td class="h">i=1</td><td>0</td><td>8</td><td>17</td><td class="ans">32</td></tr>
+    <tr><td class="h">i=2</td><td></td><td>0</td><td>6</td><td>17</td></tr>
+    <tr><td class="h">i=3</td><td></td><td></td><td>0</td><td>8</td></tr>
+    <tr><td class="h">i=4</td><td></td><td></td><td></td><td>0</td></tr>
+  </table>
+  <div class="tip green">✅ 最小总得分 = <b>32</b></div>
+</section>
+
+<!-- ============ 区间DP 代码模板 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>💻 区间动规通用模板</h2></div>
+  <pre><code class="language-python" data-trim>
+for length in range(2, n+1):        # 遍历区间长度
+    for i in range(0, n-length+1):  # 遍历区间起点
+        j = i + length - 1          # 计算区间终点
+        for k in range(i, j):       # 枚举切点 k
+            dp[i][j] = min(dp[i][j],
+                           dp[i][k] + dp[k+1][j] + 区间和[i][j])
+  </code></pre>
+  <div class="tip">🔑 <b>四层循环的顺序</b>：长度 → 起点 → 终点 → 切点。先小后大！</div>
+</section>
+
+<!-- ============ 总结 速查 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🏆 总结：7 个经典动规问题</h2></div>
+  <table class="dp" style="font-size:.6em;">
+    <tr><th>#</th><th>问题</th><th>核心方程</th><th>答案</th></tr>
+    <tr><td class="h">1</td><td>爬楼梯</td><td>f(n)=f(n−1)+f(n−2)</td><td class="ans">13</td></tr>
+    <tr><td class="h">2</td><td>最大子段和</td><td>dp[i]=max(dp[i−1]+a[i], a[i])</td><td class="ans">9</td></tr>
+    <tr><td class="h">3</td><td>最长上升子序列</td><td>dp[i]=max(dp[j]+1)</td><td class="ans">4</td></tr>
+    <tr><td class="h">4</td><td>最长公共子序列</td><td>同+1；异取max(上,左)</td><td class="ans">4</td></tr>
+    <tr><td class="h">5</td><td>0/1 背包</td><td>max(不拿, 拿=dp[i−1][j−w]+v)</td><td class="ans">12</td></tr>
+    <tr><td class="h">6</td><td>完全背包</td><td>max(不拿, 拿=dp[i][j−w]+v)</td><td class="ans">12</td></tr>
+    <tr><td class="h">7</td><td>石子合并</td><td>min(dp[i][k]+dp[k+1][j]+和)</td><td class="ans">32</td></tr>
+  </table>
+</section>
+
+<!-- ============ 三步法卡片 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>📋 动规三步法（终极版）</h2></div>
+  <div class="card" style="font-size:1.1em;">
+    <p><span class="stepnum" style="background:var(--c1);">①</span><b>找状态转移方程</b>（找规律！这是灵魂）</p>
+    <p><span class="stepnum" style="background:var(--c2);">②</span><b>初始化</b>（最开头的几个状态先定好）</p>
+    <p><span class="stepnum" style="background:var(--c5);">③</span><b>按方程一步步算</b>（小的算完算大的）</p>
+  </div>
+  <div class="tip green">🌟 一句话：<b>把大问题拆成小问题，把答案记下来，不重复劳动。</b></div>
+</section>
+
+<!-- ============ 挑战题 ============ -->
+<section>
+  <div class="titlebar"><span class="dot"></span><h2>🎮 挑战题（试试看！）</h2></div>
+  <div class="card small">
+    <p>1️⃣ <b>爬楼梯进阶</b>：一次能上 1/2/3 阶，到第 5 阶多少种？</p>
+    <p>2️⃣ <b>最大子段和变式</b>：序列 <code class="inline">−2,1,−3,4,−1,2,1,−5,4</code> 的最大子段和？（答：<b>6</b>）</p>
+    <p>3️⃣ <b>背包变式</b>：价值 <code class="inline">[3,4,5,6]</code>、重量 <code class="inline">[2,3,4,5]</code>、载重 5 的 0/1 背包？</p>
+    <p>4️⃣ <b>石子合并变式</b>：石子堆 <code class="inline">[1,3,5,2]</code> 最小合并得分？</p>
+  </div>
+  <p class="small">💡 做不出来没关系 —— 把每步答案<b>记下来</b>、<b>一步一步推</b>，这就是动规的全部秘密！</p>
+</section>
+
+<!-- ============ 结束 ============ -->
+<section class="cover">
+  <div class="cover-box" style="background:linear-gradient(135deg,var(--c4),var(--c1));">
+    <h1>🎉 恭喜你！<br>你是小小算法达人啦！</h1>
+  </div>
+  <p class="cover-sub">📖 打开《培训手册》再读一遍 &nbsp;·&nbsp; 💻 跑一跑 Python 代码亲手试试</p>
+  <p class="small" style="margin-top:30px;">🌟 动态规划不仅是技巧，更是一种<b>聪明的思考方式</b> 🌟</p>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    width: 1100,
+    height: 720,
+    margin: 0.06,
+    transition: 'slide',
+    backgroundTransition: 'fade'
+  });
+</script>
+</body>
+</html>

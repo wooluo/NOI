@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💻 动态规划 · 代码教学演示</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<style>
+  :root{
+    --c1:#5b8def; --c2:#ff7eb3; --c3:#ffd166; --c4:#06d6a0; --c5:#9b5de5;
+    --ink:#2b2d42; --bg:#f4f7fe; --line:#e3e9f7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;
+        background:var(--bg);color:var(--ink);}
+  header{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;
+          padding:18px 28px;box-shadow:0 4px 18px rgba(91,141,239,.25);}
+  header h1{margin:0;font-size:1.35em;}
+  header .sub{opacity:.92;font-size:.78em;margin-top:4px;}
+  header a{color:#fff;}
+  .wrap{display:flex;gap:0;height:calc(100vh - 76px);}
+  /* 左侧导航 */
+  nav{width:240px;background:#fff;border-right:1px solid var(--line);
+       padding:14px 10px;overflow-y:auto;flex-shrink:0;}
+  nav button{display:block;width:100%;text-align:left;border:none;background:transparent;
+              padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:6px;
+              font-family:inherit;color:var(--ink);transition:.15s;}
+  nav button:hover{background:#eef4ff;}
+  nav button.active{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;}
+  nav button .emo{font-size:1.3em;margin-right:6px;}
+  nav button .nm{font-weight:700;font-size:.92em;}
+  nav button .fn{display:block;font-size:.66em;opacity:.7;margin-top:2px;font-family:monospace;}
+  /* 主区域 */
+  main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .titlebar{padding:12px 22px;background:#fff;border-bottom:1px solid var(--line);}
+  .titlebar h2{margin:0;font-size:1.1em;display:flex;align-items:center;gap:8px;}
+  .titlebar .note{font-size:.78em;color:#666;margin-top:4px;}
+  .toolbar{margin-top:10px;display:flex;gap:10px;align-items:center;}
+  .btn{border:none;border-radius:9px;padding:8px 16px;font-size:.85em;cursor:pointer;
+        font-family:inherit;font-weight:700;transition:.15s;}
+  .btn-run{background:var(--c4);color:#fff;}
+  .btn-run:hover{filter:brightness(1.07);}
+  .btn-run:disabled{background:#b9c2d0;cursor:not-allowed;}
+  .btn-copy{background:#eef4ff;color:var(--c1);}
+  .btn-copy:hover{background:#e0eaff;}
+  .speed{font-size:.78em;color:#666;display:flex;align-items:center;gap:6px;}
+  .speed select{border-radius:6px;border:1px solid var(--line);padding:3px 6px;font-family:inherit;}
+  .panels{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .code-wrap{flex:1;overflow:auto;background:#282c34;}
+  pre{margin:0;padding:16px 18px;}
+  pre code{font-family:"SF Mono",Consolas,Menlo,monospace;font-size:.82em;line-height:1.6;}
+  /* 输出终端 */
+  .term-bar{background:#1f2430;color:#9aa5b1;padding:7px 16px;font-size:.75em;
+             display:flex;justify-content:space-between;align-items:center;border-top:2px solid #000;}
+  .term-bar .dots span{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;}
+  .term{background:#0e1116;color:#d6e2ff;padding:14px 18px;height:200px;overflow-y:auto;
+         font-family:"SF Mono",Consolas,Menlo,monospace;font-size:.82em;line-height:1.55;
+         white-space:pre-wrap;word-break:break-word;}
+  .term .cur{display:inline-block;width:8px;height:1em;background:var(--c4);
+              vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .term .done{color:var(--c4);}
+  .badge{display:inline-block;font-size:.7em;background:#fff3cd;color:#7a5b00;
+          padding:2px 10px;border-radius:999px;margin-left:10px;}
+  .hint{font-size:.72em;color:#888;}
+  @media(max-width:760px){nav{width:160px;} .wrap{height:auto;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>💻 动态规划 · 代码教学演示</h1>
+  <div class="sub">👈 左边选一个程序 &nbsp;|&nbsp; 中间看代码 &nbsp;|&nbsp; 点 <b>▶ 运行</b> 看模拟运行结果 &nbsp;|&nbsp;
+  配套：<a href="手册/神奇的动态规划-培训手册.md">培训手册</a> · <a href="课件/神奇的动态规划-课件.html">课件</a></div>
+</header>
+<div class="wrap">
+  <nav id="nav">
+<button data-idx="0" class="active"><span class="emo">🪜</span><span class="nm">爬楼梯</span><span class="fn">01_爬楼梯.py</span></button>
+<button data-idx="1"><span class="emo">➕</span><span class="nm">最大子段和</span><span class="fn">02_最大子段和.py</span></button>
+<button data-idx="2"><span class="emo">📈</span><span class="nm">最长上升子序列</span><span class="fn">03_最长上升子序列.py</span></button>
+<button data-idx="3"><span class="emo">🤝</span><span class="nm">最长公共子序列</span><span class="fn">04_最长公共子序列.py</span></button>
+<button data-idx="4"><span class="emo">🎒</span><span class="nm">0/1 背包</span><span class="fn">05_01背包.py</span></button>
+<button data-idx="5"><span class="emo">♻️</span><span class="nm">完全背包</span><span class="fn">06_完全背包.py</span></button>
+<button data-idx="6"><span class="emo">🪨</span><span class="nm">石子合并</span><span class="fn">07_石子合并.py</span></button>
+  </nav>
+  <main>
+    <div class="titlebar">
+      <h2 id="t-title"></h2>
+      <div class="note" id="t-note"></div>
+      <div class="toolbar">
+        <button class="btn btn-run" id="btn-run">▶ 运行</button>
+        <button class="btn btn-copy" id="btn-copy">📋 复制代码</button>
+        <span class="speed">速度：
+          <select id="speed">
+            <option value="8">慢速</option>
+            <option value="3" selected>正常</option>
+            <option value="1">快速</option>
+            <option value="0">瞬间</option>
+          </select>
+        </span>
+        <span class="hint">（运行结果为本地 Python 预先执行的真实输出，此处模拟展示）</span>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="code-wrap"><pre><code id="code" class="language-python"></code></pre></div>
+      <div class="term-bar">
+        <span>🖥️ 运行结果 — <span id="term-file"></span></span>
+        <span class="dots"><span style="background:#ff5f56"></span><span style="background:#ffbd2e"></span><span style="background:#27c93f"></span></span>
+      </div>
+      <div class="term" id="term"><span class="cur"></span></div>
+    </div>
+  </main>
+</div>
+<script>
+const DATA = [{"file": "01_爬楼梯.py", "title": "爬楼梯", "emoji": "🪜", "note": "入门：状态转移方程 + 初始化", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n第 1 章配套代码：爬楼梯（动态规划入门）\n======================================\n问题：一次能上 1 阶或 2 阶，爬到第 n 阶有多少种走法？\n\n核心思想（状态转移方程）：\n    到第 n 阶的走法 = 到第 n-1 阶的走法 + 到第 n-2 阶的走法\n    （因为你最后一步要么从 n-1 跨 1 阶，要么从 n-2 跨 2 阶）\n\n这其实就是\"斐波那契数列\"！\n\"\"\"\n\n\ndef stairs(n):\n    \"\"\"返回爬到第 n 阶的走法数（动态规划版）\"\"\"\n\n    # ② 初始化最前面的状态\n    if n == 1:\n        return 1\n    if n == 2:\n        return 2\n\n    # 用两个变量记住\"前两阶\"和\"上一阶\"的答案\n    prev2 = 1  # 第 1 阶\n    prev1 = 2  # 第 2 阶\n\n    # ③ 按方程一步步算到第 n 阶\n    for step in range(3, n + 1):\n        current = prev1 + prev2   # 当前阶 = 上一阶 + 上上阶\n        prev2 = prev1             # 往前\"挪一格\"\n        prev1 = current\n    return prev1\n\n\ndef stairs_show_table(n):\n    \"\"\"把每一阶的走法数打印成一张表，方便观察规律\"\"\"\n    if n >= 1:\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        if n >= 2:\n            dp[2] = 2\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n\n    print(\"台阶阶数：\", list(range(1, n + 1)))\n    print(\"走法数量：\", dp[1:])\n    print()\n\n\nif __name__ == \"__main__\":\n    print(\"=\" * 40)\n    print(\"🪜  爬楼梯走法数\")\n    print(\"=\" * 40)\n    stairs_show_table(8)\n\n    n = 6\n    print(f\"爬到第 {n} 阶，一共有 {stairs(n)} 种走法！\")\n    # 第 6 阶应该是 13 种\n", "output": "========================================\n🪜  爬楼梯走法数\n========================================\n台阶阶数： [1, 2, 3, 4, 5, 6, 7, 8]\n走法数量： [1, 2, 3, 5, 8, 13, 21, 34]\n\n爬到第 6 阶，一共有 13 种走法！"}, {"file": "02_最大子段和.py", "title": "最大子段和", "emoji": "➕", "note": "一维 dp：接着前面 or 自己开段", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n3.1 节配套代码：最大子段和\n========================\n问题：从一串数字里挑出\"连续的一段\"，让它们的和最大。\n\n例子：1  -2  5  3  -4  5      答案：9  （选 5 3 -4 5）\n\n核心思想：\n    dp[i] = 以第 i 个数\"结尾\"的最大子段和\n    第 i 个数要么接着前面那段，要么自己单独开一段：\n        dp[i] = max( dp[i-1] + a[i] ,  a[i] )\n    初始：dp[0] = a[0]\n    最终答案：所有 dp[i] 里最大的那个。\n\"\"\"\n\n\ndef max_subarray(a):\n    \"\"\"返回 (最大子段和, dp数组)\"\"\"\n    n = len(a)\n    dp = [0] * n\n    dp[0] = a[0]          # ② 初始化\n    ans = dp[0]\n\n    for i in range(1, n):\n        # ③ 状态转移：接着前面，或自己开段，取较大的\n        dp[i] = max(dp[i - 1] + a[i], a[i])\n        ans = max(ans, dp[i])     # 随时记录最大值\n\n    return ans, dp\n\n\nif __name__ == \"__main__\":\n    a = [1, -2, 5, 3, -4, 5]\n\n    print(\"=\" * 40)\n    print(\"➕  最大子段和\")\n    print(\"=\" * 40)\n    print(\"数字序列：\", a)\n    print()\n\n    ans, dp = max_subarray(a)\n\n    # 打印每一步的计算过程\n    print(\"位置 i   :\", list(range(len(a))))\n    print(\"数字 a[i]:\", a)\n    print(\"dp[i]    :\", dp)\n    print()\n    print(\"✅ 最大子段和 =\", ans)   # 应该是 9\n", "output": "========================================\n➕  最大子段和\n========================================\n数字序列： [1, -2, 5, 3, -4, 5]\n\n位置 i   : [0, 1, 2, 3, 4, 5]\n数字 a[i]: [1, -2, 5, 3, -4, 5]\ndp[i]    : [1, -1, 5, 8, 4, 9]\n\n✅ 最大子段和 = 9"}, {"file": "03_最长上升子序列.py", "title": "最长上升子序列", "emoji": "📈", "note": "一维 dp：双重循环找前面比它小的", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n3.2 节配套代码：最长上升子序列 (LIS)\n==================================\n问题：从一串数字里选一些数（不用挨着，但顺序不能乱），\n      让它们从左到右严格变大，最长能有多长？\n\n例子：5  3  9  11  4  2  15      答案：4  （比如 5 9 11 15）\n\n核心思想：\n    dp[i] = 以第 i 个数\"结尾\"的最长上升子序列长度\n    看看 i 前面有哪些数比 a[i] 小，那些数后面都能接上 a[i]：\n        对所有 j < i 且 a[j] < a[i]：dp[i] = max(dp[i], dp[j] + 1)\n    初始：每个 dp[i] = 1 （至少能选自己这一个数）\n\"\"\"\n\n\ndef lis(a):\n    \"\"\"返回 (最长长度, dp数组)\"\"\"\n    n = len(a)\n    dp = [1] * n          # ② 初始化：每个位置至少长度为 1\n\n    for i in range(n):\n        for j in range(i):              # 只看 i 左边的\n            if a[j] < a[i]:             # 比 a[i] 小才能接上\n                # ③ 状态转移\n                dp[i] = max(dp[i], dp[j] + 1)\n\n    return max(dp), dp\n\n\nif __name__ == \"__main__\":\n    a = [5, 3, 9, 11, 4, 2, 15]\n\n    print(\"=\" * 40)\n    print(\"📈  最长上升子序列 (LIS)\")\n    print(\"=\" * 40)\n    print(\"数字序列：\", a)\n    print()\n\n    ans, dp = lis(a)\n\n    print(\"位置 i   :\", list(range(1, len(a) + 1)))\n    print(\"数字 a[i]:\", a)\n    print(\"长度 dp[i]:\", dp)\n    print()\n    print(\"✅ 最长上升子序列长度 =\", ans)   # 应该是 4\n", "output": "========================================\n📈  最长上升子序列 (LIS)\n========================================\n数字序列： [5, 3, 9, 11, 4, 2, 15]\n\n位置 i   : [1, 2, 3, 4, 5, 6, 7]\n数字 a[i]: [5, 3, 9, 11, 4, 2, 15]\n长度 dp[i]: [1, 1, 2, 3, 2, 1, 4]\n\n✅ 最长上升子序列长度 = 4"}, {"file": "04_最长公共子序列.py", "title": "最长公共子序列", "emoji": "🤝", "note": "二维表格：相同+1，不同取max(上,左)", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n4.1 节配套代码：最长公共子序列 (LCS)\n==================================\n问题：找两个序列都拥有的最长子序列（不用连续，顺序不能乱）。\n\n例子：s1 = \"abcbdab\"\n      s2 = \"bdcaba\"\n      答案：4  （比如 \"bcba\" 或 \"bdab\"）\n\n核心思想（画一张二维表格 dp[i][j]）：\n    dp[i][j] = s1前i个字符 和 s2前j个字符 的最长公共子序列长度\n\n    ① s1[i] == s2[j] （两个字符相同）：\n        dp[i][j] = dp[i-1][j-1] + 1        # 对角线 + 1\n    ② s1[i] != s2[j] （两个字符不同）：\n        dp[i][j] = max(dp[i-1][j], dp[i][j-1])   # 上方、左方取较大\n\n    第 0 行、第 0 列全是 0 （空序列和谁比都是 0）。\n\"\"\"\n\n\ndef lcs(s1, s2):\n    \"\"\"返回 (最长长度, dp表格)\"\"\"\n    m, n = len(s1), len(s2)\n\n    # ② 初始化：多开一行一列，全是 0\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            # 注意：dp 的下标比字符串大 1，所以要减 1\n            if s1[i - 1] == s2[j - 1]:\n                # ③ 情况①：字符相同，对角线 +1\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                # ③ 情况②：字符不同，取上、左较大\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n\n    return dp[m][n], dp\n\n\ndef print_table(s1, s2, dp):\n    \"\"\"漂亮地打印 dp 表格\"\"\"\n    print(\"        \", \"  \".join(s2))\n    print(\"       \", \"  \".join(str(j) for j in range(1, len(s2) + 1)))\n    for i in range(1, len(s1) + 1):\n        row = [f\"{dp[i][j]}\" for j in range(1, len(s2) + 1)]\n        print(f\"  {s1[i-1]}({i}):\", \"  \".join(row))\n\n\nif __name__ == \"__main__\":\n    s1 = \"abcbdab\"\n    s2 = \"bdcaba\"\n\n    print(\"=\" * 40)\n    print(\"🤝  最长公共子序列 (LCS)\")\n    print(\"=\" * 40)\n    print(f\"s1 = {s1}\")\n    print(f\"s2 = {s2}\")\n    print()\n\n    ans, dp = lcs(s1, s2)\n\n    print(\"dp 表格：\")\n    print_table(s1, s2, dp)\n    print()\n    print(\"✅ 最长公共子序列长度 =\", ans)   # 应该是 4\n", "output": "========================================\n🤝  最长公共子序列 (LCS)\n========================================\ns1 = abcbdab\ns2 = bdcaba\n\ndp 表格：\n         b  d  c  a  b  a\n        1  2  3  4  5  6\n  a(1): 0  0  0  1  1  1\n  b(2): 1  1  1  1  2  2\n  c(3): 1  1  2  2  2  2\n  b(4): 1  1  2  2  3  3\n  d(5): 1  2  2  2  3  3\n  a(6): 1  2  2  3  3  4\n  b(7): 1  2  2  3  4  4\n\n✅ 最长公共子序列长度 = 4"}, {"file": "05_01背包.py", "title": "0/1 背包", "emoji": "🎒", "note": "二维表格：拿或不拿；一维要逆序", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n4.2 节配套代码：0/1 背包\n=======================\n问题：有几种物品，每种只有 1 件，背包装载有限。\n      每件物品\"拿(1)\"或\"不拿(0)\"，让总价值最高。\n\n例子：\n    重量 w = [2, 3, 7, 4]\n    价值 v = [1, 3, 9, 5]\n    载重 W = 10\n    答案：12  （拿第2、3件：重量 3+7=10，价值 3+9=12）\n\n核心思想（二维表格 dp[i][j]）：\n    dp[i][j] = 前 i 种物品、载重 j 时的最大价值\n\n    当 j < w[i]   （装不下）：dp[i][j] = dp[i-1][j]\n    当 j >= w[i]  （装得下）：\n        dp[i][j] = max( dp[i-1][j] ,  dp[i-1][j-w[i]] + v[i] )\n                      不拿           拿（看\"上一行\"）\n\"\"\"\n\n\ndef knapsack_01(w, v, W):\n    \"\"\"二维数组版。返回 (最大价值, dp表格)\"\"\"\n    n = len(w)\n    dp = [[0] * (W + 1) for _ in range(n + 1)]   # ② 初始化全 0\n\n    for i in range(1, n + 1):          # 遍历每种物品\n        for j in range(W + 1):         # 遍历每种载重\n            # 不拿第 i 件\n            dp[i][j] = dp[i - 1][j]\n            # 拿第 i 件（前提是装得下）\n            if j >= w[i - 1]:\n                dp[i][j] = max(dp[i][j], dp[i - 1][j - w[i - 1]] + v[i - 1])\n\n    return dp[n][W], dp\n\n\ndef knapsack_01_1d(w, v, W):\n    \"\"\"一维数组省空间版。\n    关键：载重 j 要【从大到小】（逆序）遍历！\n    为什么？因为\"拿\"的时候要看上一行的旧值，逆序能保证读到的是旧值。\n    如果正序，同一件物品就可能被\"拿很多次\"，那就变成完全背包了。\n    \"\"\"\n    n = len(w)\n    dp = [0] * (W + 1)\n\n    for i in range(n):                 # 遍历每种物品\n        for j in range(W, w[i] - 1, -1):   # ⚠️ 逆序！从大到小\n            dp[j] = max(dp[j], dp[j - w[i]] + v[i])\n\n    return dp[W]\n\n\nif __name__ == \"__main__\":\n    w = [2, 3, 7, 4]\n    v = [1, 3, 9, 5]\n    W = 10\n\n    print(\"=\" * 40)\n    print(\"🎒  0/1 背包\")\n    print(\"=\" * 40)\n    print(f\"重量 w = {w}\")\n    print(f\"价值 v = {v}\")\n    print(f\"载重 W = {W}\")\n    print()\n\n    ans, dp = knapsack_01(w, v, W)\n\n    # 打印表格（去掉第 0 行，只看每种物品）\n    print(\"dp 表格（行=物品，列=载重 0~10）：\")\n    header = \"物品(重,值) | \" + \" \".join(f\"{j:2d}\" for j in range(W + 1))\n    print(header)\n    print(\"-\" * len(header))\n    for i in range(1, len(w) + 1):\n        row = \" \".join(f\"{dp[i][j]:2d}\" for j in range(W + 1))\n        print(f\"  ④({w[i-1]},{v[i-1]})  | {row}\")\n    print()\n\n    print(\"✅ 二维数组结果 =\", ans)              # 12\n    print(\"✅ 一维数组结果 =\", knapsack_01_1d(w, v, W))   # 12\n", "output": "========================================\n🎒  0/1 背包\n========================================\n重量 w = [2, 3, 7, 4]\n价值 v = [1, 3, 9, 5]\n载重 W = 10\n\ndp 表格（行=物品，列=载重 0~10）：\n物品(重,值) |  0  1  2  3  4  5  6  7  8  9 10\n------------------------------------------\n  ④(2,1)  |  0  0  1  1  1  1  1  1  1  1  1\n  ④(3,3)  |  0  0  1  3  3  4  4  4  4  4  4\n  ④(7,9)  |  0  0  1  3  3  4  4  9  9 10 12\n  ④(4,5)  |  0  0  1  3  5  5  6  9  9 10 12\n\n✅ 二维数组结果 = 12\n✅ 一维数组结果 = 12"}, {"file": "06_完全背包.py", "title": "完全背包", "emoji": "♻️", "note": "和0/1仅差一处：拿看本行；一维要正序", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n4.3 节配套代码：完全背包\n=======================\n问题：每种物品有【无限件】，想拿几件拿几件，让总价值最高。\n\n例子：\n    重量 w = [2, 3, 7, 4]\n    价值 v = [1, 3, 9, 5]\n    载重 W = 10\n    答案：12\n\n和 0/1 背包的【唯一区别】：\n    \"拿\"的时候，看的不是上一行 dp[i-1][...]，而是【本行】dp[i][...]！\n    因为拿完一件还能再拿同一件。\n\n    dp[i][j] = max( dp[i-1][j] ,  dp[i][j-w[i]] + v[i] )\n                 不拿           拿（看\"本行\"，可以再拿）\n\n一维数组版：载重 j 要【从小到大】（正序）遍历！\n    正序遍历能让\"本行\"的新值被读到，从而支持\"同一物品拿多件\"。\n    （对比 0/1 背包是逆序 —— 这是两兄弟最容易搞混的地方！）\n\"\"\"\n\n\ndef knapsack_complete(w, v, W):\n    \"\"\"二维数组版。返回 (最大价值, dp表格)\"\"\"\n    n = len(w)\n    dp = [[0] * (W + 1) for _ in range(n + 1)]   # ② 初始化全 0\n\n    for i in range(1, n + 1):\n        for j in range(W + 1):\n            # 不拿第 i 件\n            dp[i][j] = dp[i - 1][j]\n            # 拿第 i 件：注意这里是 dp[i][...]（本行），不是 dp[i-1][...]\n            if j >= w[i - 1]:\n                dp[i][j] = max(dp[i][j], dp[i][j - w[i - 1]] + v[i - 1])\n\n    return dp[n][W], dp\n\n\ndef knapsack_complete_1d(w, v, W):\n    \"\"\"一维数组省空间版。\n    关键：载重 j 要【从小到大】（正序）遍历！\n    \"\"\"\n    n = len(w)\n    dp = [0] * (W + 1)\n\n    for i in range(n):\n        for j in range(w[i], W + 1):   # ⚠️ 正序！从小到大\n            dp[j] = max(dp[j], dp[j - w[i]] + v[i])\n\n    return dp[W]\n\n\nif __name__ == \"__main__\":\n    w = [2, 3, 7, 4]\n    v = [1, 3, 9, 5]\n    W = 10\n\n    print(\"=\" * 40)\n    print(\"🎒♻️  完全背包（物品无限件）\")\n    print(\"=\" * 40)\n    print(f\"重量 w = {w}\")\n    print(f\"价值 v = {v}\")\n    print(f\"载重 W = {W}\")\n    print()\n\n    ans, dp = knapsack_complete(w, v, W)\n\n    print(\"dp 表格（行=物品，列=载重 0~10）：\")\n    header = \"物品(重,值) | \" + \" \".join(f\"{j:2d}\" for j in range(W + 1))\n    print(header)\n    print(\"-\" * len(header))\n    for i in range(1, len(w) + 1):\n        row = \" \".join(f\"{dp[i][j]:2d}\" for j in range(W + 1))\n        print(f\"  ④({w[i-1]},{v[i-1]})  | {row}\")\n    print()\n\n    print(\"✅ 二维数组结果 =\", ans)                       # 12\n    print(\"✅ 一维数组结果 =\", knapsack_complete_1d(w, v, W))  # 12\n\n    print()\n    print(\"💡 对比记忆：\")\n    print(\"   0/1 背包一维  →  j 逆序（大到小）\")\n    print(\"   完全背包一维  →  j 正序（小到大）\")\n", "output": "========================================\n🎒♻️  完全背包（物品无限件）\n========================================\n重量 w = [2, 3, 7, 4]\n价值 v = [1, 3, 9, 5]\n载重 W = 10\n\ndp 表格（行=物品，列=载重 0~10）：\n物品(重,值) |  0  1  2  3  4  5  6  7  8  9 10\n------------------------------------------\n  ④(2,1)  |  0  0  1  1  2  2  3  3  4  4  5\n  ④(3,3)  |  0  0  1  3  3  4  6  6  7  9  9\n  ④(7,9)  |  0  0  1  3  3  4  6  9  9 10 12\n  ④(4,5)  |  0  0  1  3  5  5  6  9 10 10 12\n\n✅ 二维数组结果 = 12\n✅ 一维数组结果 = 12\n\n💡 对比记忆：\n   0/1 背包一维  →  j 逆序（大到小）\n   完全背包一维  →  j 正序（小到大）"}, {"file": "07_石子合并.py", "title": "石子合并", "emoji": "🪨", "note": "区间动规：按长度枚举切点", "code": "# -*- coding: utf-8 -*-\n\"\"\"\n5.1 节配套代码：石子合并（区间动规）\n==================================\n问题：一排石子堆，每次只能合并【相邻】的两堆，\n      得分 = 合并后这堆的石子数。合并到只剩 1 堆，求最小总得分。\n\n例子：石子堆 a = [5, 3, 3, 5]      答案：32\n\n核心思想（区间动规）：\n    dp[i][j] = 把第 i 堆到第 j 堆合并成一堆的最小得分\n\n    最后一步一定是把区间 [i..j] 切成左右两半分别合并好，再合到一起。\n    不管怎么切，最后一次大合并的代价都 = 这段区间的石子总和。\n\n    所以枚举切点 k（i <= k < j）：\n        dp[i][j] = min( dp[i][k] + dp[k+1][j] + 区间[i..j]的总和 )\n\n    要点：【按区间长度从小到大算】——先算所有长度2的，再长度3……最后整个。\n\"\"\"\n\n\ndef stone_merge(a):\n    \"\"\"返回 (最小得分, dp表格, 前缀和数组)\"\"\"\n    n = len(a)\n\n    # 前缀和：快速求任意区间 [i..j] 的石子总和\n    # prefix[k] = a[0]+a[1]+...+a[k-1]，所以 区间和 = prefix[j+1]-prefix[i]\n    prefix = [0] * (n + 1)\n    for i in range(n):\n        prefix[i + 1] = prefix[i] + a[i]\n\n    def region_sum(i, j):\n        \"\"\"返回第 i 堆到第 j 堆（含两端）的石子总和\"\"\"\n        return prefix[j + 1] - prefix[i]\n\n    # dp[i][j]：i==j 时（只有一堆）不用合并，得分为 0（初始化）\n    dp = [[0] * n for _ in range(n)]\n\n    # 按区间长度 length 从小到大算（长度1已经是0，从2开始）\n    for length in range(2, n + 1):           # 遍历区间长度\n        for i in range(n - length + 1):      # 遍历区间起点\n            j = i + length - 1               # 计算区间终点\n            dp[i][j] = float(\"inf\")\n            # 枚举切点 k\n            for k in range(i, j):\n                cost = dp[i][k] + dp[k + 1][j] + region_sum(i, j)\n                dp[i][j] = min(dp[i][j], cost)\n\n    return dp[0][n - 1], dp, prefix\n\n\nif __name__ == \"__main__\":\n    a = [5, 3, 3, 5]\n\n    print(\"=\" * 40)\n    print(\"🪨  石子合并（区间动规）\")\n    print(\"=\" * 40)\n    print(f\"石子堆：{a}\")\n    print()\n\n    ans, dp, _ = stone_merge(a)\n    n = len(a)\n\n    print(\"dp 表格（dp[i][j] = 第i~j堆合并的最小得分）：\")\n    header = \"i＼j | \" + \" \".join(f\"{j+1:>3d}\" for j in range(n))\n    print(header)\n    print(\"-\" * len(header))\n    for i in range(n):\n        row = []\n        for j in range(n):\n            if j < i:\n                row.append(\"   .\")          # 下三角无意义\n            else:\n                row.append(f\"{dp[i][j]:>4d}\")\n        print(f\" {i+1}  |\" + \" \".join(row))\n    print()\n\n    print(f\"✅ 把全部 {n} 堆合并成一堆的最小得分 = {ans}\")   # 32\n", "output": "========================================\n🪨  石子合并（区间动规）\n========================================\n石子堆：[5, 3, 3, 5]\n\ndp 表格（dp[i][j] = 第i~j堆合并的最小得分）：\ni＼j |   1   2   3   4\n---------------------\n 1  |   0    8   17   32\n 2  |   .    0    6   17\n 3  |   .    .    0    8\n 4  |   .    .    .    0\n\n✅ 把全部 4 堆合并成一堆的最小得分 = 32"}];
+let cur = 0;          // 当前程序下标
+let timer = null;     // 打字机定时器
+
+const elCode = document.getElementById('code');
+const elTerm = document.getElementById('term');
+const elTitle = document.getElementById('t-title');
+const elNote = document.getElementById('t-note');
+const elTermFile = document.getElementById('term-file');
+const btnRun = document.getElementById('btn-run');
+const btnCopy = document.getElementById('btn-copy');
+const nav = document.getElementById('nav');
+
+function show(i){
+  cur = i;
+  const it = DATA[i];
+  // 切换高亮按钮
+  [...nav.children].forEach((b,k)=>b.classList.toggle('active', k===i));
+  // 标题
+  elTitle.innerHTML = it.emoji + ' ' + it.title + ' <span class="badge">'+it.file+'</span>';
+  elNote.textContent = '💡 ' + it.note;
+  elTermFile.textContent = it.file;
+  // 代码（textContent 自动转义，再用 hljs 高亮）
+  elCode.textContent = it.code;
+  elCode.removeAttribute('data-highlighted');
+  elCode.className = 'language-python';
+  hljs.highlightElement(elCode);
+  // 重置终端
+  resetTerm();
+}
+
+function resetTerm(){
+  if(timer){clearInterval(timer); timer=null;}
+  elTerm.innerHTML = '<span class="cur"></span>';
+  btnRun.disabled = false;
+  btnRun.textContent = '▶ 运行';
+}
+
+function typeOut(text){
+  const speed = parseInt(document.getElementById('speed').value,10);
+  if(speed===0){
+    elTerm.innerHTML = escapeHtml(text) + '\n<span class="done">——— 运行结束 ———</span>';
+    finishRun();
+    return;
+  }
+  let pos = 0;
+  // 按几个字符一批推进，更像终端
+  elTerm.innerHTML = '<span class="cur"></span>';
+  const curSpan = ()=>elTerm.querySelector('.cur');
+  timer = setInterval(()=>{
+    const step = Math.max(1, Math.floor(speed)); // speed 越大每次推进越多
+    pos += step;
+    const slice = text.slice(0,pos);
+    elTerm.innerHTML = escapeHtml(slice) + '<span class="cur"></span>';
+    elTerm.scrollTop = elTerm.scrollHeight;
+    if(pos >= text.length){
+      clearInterval(timer); timer=null;
+      elTerm.innerHTML = escapeHtml(text) + '\n<span class="done">——— 运行结束 ✅———</span>';
+      finishRun();
+    }
+  }, 16);
+}
+
+function finishRun(){ btnRun.disabled=false; btnRun.textContent='▶ 再次运行'; }
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// 事件
+nav.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  show(parseInt(b.dataset.idx,10));
+});
+btnRun.addEventListener('click', ()=>{
+  if(timer){clearInterval(timer); timer=null;}
+  btnRun.disabled = true; btnRun.textContent = '运行中…';
+  typeOut(DATA[cur].output);
+});
+btnCopy.addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(DATA[cur].code);
+        btnCopy.textContent='✅ 已复制'; }
+  catch(e){ btnCopy.textContent='复制失败'; }
+  setTimeout(()=>btnCopy.textContent='📋 复制代码',1500);
+});
+
+// 初始化
+show(0);
+</script>
+</body>
+</html>
