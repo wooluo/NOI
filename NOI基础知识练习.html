@@ -257,6 +257,24 @@
   .chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
   footer{margin-top:30px;color:#94a3b8;font-size:12px;text-align:center;line-height:1.7}
   footer code{background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px}
+  /* 继续答题提示框 */
+  .continue-box{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:linear-gradient(90deg,#eef2ff,#f0fdfa);border:1px solid #c7d2fe;
+    border-radius:12px;padding:14px 16px;margin:0 0 18px;flex-wrap:wrap;
+  }
+  .cb-info{display:flex;align-items:center;gap:12px}
+  .cb-emoji{font-size:1.6em}
+  .cb-title{font-weight:700;color:var(--primary-d)}
+  .cb-sub{font-size:12.5px;color:var(--text-soft);margin-top:2px}
+  .cb-acts{display:flex;gap:8px}
+  .cb-go{background:var(--primary);color:#fff;border:0;border-radius:9px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;transition:.15s}
+  .cb-go:hover{background:var(--primary-d)}
+  .cb-del{background:transparent;color:var(--text-mute);border:1px solid var(--border);border-radius:9px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;transition:.15s}
+  .cb-del:hover{background:var(--card-2);color:var(--bad)}
+  /* 键盘快捷键提示 */
+  .kbd-hint{font-size:12px;color:var(--text-mute);margin-top:14px;text-align:center}
+  .kbd-hint kbd{background:var(--card-2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:monospace;font-size:11px;color:var(--text-soft)}
   @media(max-width:560px){
     .result-stats{grid-template-columns:repeat(2,1fr)}
     .card{padding:20px 16px}
@@ -280,6 +298,20 @@
       <div class="stat"><div class="num" id="statMulti">0</div><div class="lbl">多选题</div></div>
       <div class="stat"><div class="num">2</div><div class="lbl">知识模块</div></div>
       <div class="stat"><div class="num">100</div><div class="lbl">正式笔试满分</div></div>
+    </div>
+
+    <div id="continueBox" class="continue-box hidden">
+      <div class="cb-info">
+        <span class="cb-emoji">💾</span>
+        <div>
+          <div class="cb-title">发现未完成的练习</div>
+          <div class="cb-sub" id="continueMeta"></div>
+        </div>
+      </div>
+      <div class="cb-acts">
+        <button class="cb-go" id="continueBtn">▶ 继续答题</button>
+        <button class="cb-del" id="discardBtn">放弃进度</button>
+      </div>
     </div>
 
     <div class="section-title">① 选择练习方案</div>
@@ -320,6 +352,8 @@
       <div class="q-text" id="qText"></div>
       <div class="options" id="qOptions"></div>
       <div class="feedback" id="qFeedback"></div>
+
+      <div class="kbd-hint">💡 快捷键：<kbd>A</kbd>~<kbd>D</kbd> 选答　<kbd>←</kbd> 上一题　<kbd>→</kbd> 下一题</div>
 
       <div class="quiz-nav">
         <button class="nav-btn" id="prevBtn">← 上一题</button>
@@ -711,6 +745,66 @@ let state = {
   currentFilter:"all"
 };
 
+/* ============================================================
+   进度持久化（localStorage）—— 刷新/关页面不丢答题进度
+   ============================================================ */
+const STORE_KEY = "noi_quiz_progress_v1";
+function saveProgress(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      mode: state.mode,
+      order: state.order,
+      idx: state.idx,
+      startTs: state.startTs,
+      poolIds: state.pool.map(q=>q.id),
+      answers: state.answers,
+      judged: state.judged
+    }));
+  }catch(e){ /* 隐私模式可能禁用 localStorage，静默忽略 */ }
+}
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    if(!d || !Array.isArray(d.poolIds) || d.poolIds.length===0) return null;
+    return d;
+  }catch(e){ return null; }
+}
+function clearProgress(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+
+/* 在首页检测是否有未完成进度，显示"继续答题"入口 */
+function maybeShowContinue(){
+  const box = document.getElementById("continueBox");
+  if(!box) return;
+  const d = loadProgress();
+  if(!d){ box.classList.add("hidden"); return; }
+  const answered = Object.keys(d.answers||{}).filter(id=> (d.answers[id]||[]).length>0).length;
+  document.getElementById("continueMeta").textContent =
+    `${d.mode==="exam"?"考试":"练习"}模式 · 第 ${Math.min((d.idx||0)+1, d.poolIds.length)} / ${d.poolIds.length} 题 · 已答 ${answered} 题`;
+  box.classList.remove("hidden");
+}
+/* 从保存的进度恢复，继续答题 */
+function continueProgress(){
+  const d = loadProgress();
+  if(!d) return;
+  state.mode = d.mode || "practice";
+  state.order = d.order || "random";
+  state.idx = d.idx || 0;
+  state.startTs = d.startTs || 0;
+  state.answers = d.answers || {};
+  state.judged = d.judged || {};
+  document.querySelectorAll("#modeSeg button").forEach(b=>b.classList.toggle("active", b.dataset.mode===state.mode));
+  document.querySelectorAll("#orderSeg button").forEach(b=>b.classList.toggle("active", b.dataset.order===state.order));
+  const map = {}; QUESTIONS.forEach(q=>map[q.id]=q);
+  state.pool = d.poolIds.map(id=>map[id]).filter(Boolean);
+  if(state.pool.length===0){ clearProgress(); maybeShowContinue(); return; }
+  show("quiz");
+  startTimer();
+  renderQuestion();
+  saveProgress();
+}
+
 /* 预设方案 */
 const PRESETS = [
   {key:"exam",   title:"模拟考试", desc:"随机 45 单选 + 5 多选（同真题）", single:45, multi:5},
@@ -763,10 +857,31 @@ function init(){
   document.getElementById("retrySameBtn").onclick = ()=>{ buildPoolFromCurrentPreset(); goQuiz(); };
   document.getElementById("retryWrongBtn").onclick = retryWrongOnly;
   document.getElementById("homeBtn").onclick = goHome;
-  document.getElementById("prevBtn").onclick = ()=>{ if(state.idx>0){ state.idx--; renderQuestion(); } };
+  document.getElementById("prevBtn").onclick = ()=>{ if(state.idx>0){ state.idx--; renderQuestion(); saveProgress(); } };
   document.getElementById("nextBtn").onclick = nextQuestion;
   document.getElementById("submitBtn").onclick = submitQuiz;
   document.getElementById("skipBtn").onclick = nextQuestion;
+
+  // 继续答题 / 放弃进度
+  document.getElementById("continueBtn").onclick = continueProgress;
+  document.getElementById("discardBtn").onclick = ()=>{ clearProgress(); maybeShowContinue(); };
+
+  // 键盘快捷键（仅在答题页生效）
+  document.addEventListener("keydown", function(ev){
+    if(document.getElementById("screen-quiz").classList.contains("hidden")) return;
+    const q = state.pool[state.idx];
+    if(!q) return;
+    const k = ev.key;
+    if(k==="ArrowLeft"){ ev.preventDefault(); if(state.idx>0){ state.idx--; renderQuestion(); saveProgress(); } return; }
+    if(k==="ArrowRight"){ ev.preventDefault(); nextQuestion(); return; }
+    let oi = -1;
+    if(/^[a-zA-Z]$/.test(k)){ oi = k.toLowerCase().charCodeAt(0)-97; }
+    else if(/^[1-9]$/.test(k)){ oi = parseInt(k,10)-1; }
+    if(oi>=0 && oi<q.o.length){ ev.preventDefault(); selectOption(oi, q); }
+  });
+
+  // 首页检测未完成进度
+  maybeShowContinue();
 }
 
 /* ============================================================
@@ -818,14 +933,17 @@ function goQuiz(){
   state.idx = 0;
   state.answers = {};
   state.judged = {};
+  state.startTs = 0;      // 新一轮，重置计时
   show("quiz");
   startTimer();
   renderQuestion();
+  saveProgress();          // 记录新一轮进度
 }
 
 function goHome(){
   stopTimer();
   show("start");
+  maybeShowContinue();     // 保留进度，首页可继续
 }
 
 /* ============================================================
@@ -913,6 +1031,7 @@ function selectOption(i, q){
     }
   }
   renderQuestion();
+  saveProgress();
 }
 
 function nextQuestion(){
@@ -921,11 +1040,13 @@ function nextQuestion(){
   if(state.mode==="practice" && q.type==="multiple" && state.judged[q.id]===undefined && state.answers[q.id] && state.answers[q.id].length>0){
     state.judged[q.id] = isCorrect(q);
     renderQuestion();
+    saveProgress();
     return; // 先让用户看到反馈
   }
   if(state.idx < state.pool.length-1){
     state.idx++;
     renderQuestion();
+    saveProgress();
   } else {
     // 最后一题
     if(state.mode==="practice"){
@@ -961,6 +1082,7 @@ function finish(){
   stopTimer();
   show("result");
   renderResult();
+  clearProgress();   // 本轮已结束，清除保存的进度
 }
 
 /* ============================================================
@@ -1035,7 +1157,7 @@ function renderReview(){
    ============================================================ */
 function startTimer(){
   stopTimer();
-  state.startTs = Date.now();
+  state.startTs = state.startTs || Date.now();  // 恢复进度时续用旧值，否则从现在开始
   updateTimer();
   state.timer = setInterval(updateTimer, 1000);
 }
