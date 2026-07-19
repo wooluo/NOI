@@ -1106,7 +1106,7 @@ function renderResult(){
   document.getElementById("rsRate").textContent = Math.round(right/total*100)+"%";
   const pass = document.getElementById("resultPass");
   if(score>=60){ pass.innerHTML = `<span class="result-pass pass-yes">✓ 及格（≥60 分）</span>`; }
-  else { pass.innerHTML = `<span class="result-pass pass-no">✗ 未及格，继续加油</span>`; }
+  else { pass.innerHTML = `<span class="result-pass pass-no">✗ 菜鸡，你得努力了，不然未来你连送外卖的资格都没有！</span>`; }
   // 重置筛选
   state.currentFilter = "all";
   document.querySelectorAll("#reviewFilter .chip").forEach(x=>x.classList.toggle("active", x.dataset.filter==="all"));
