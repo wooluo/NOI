@@ -1,0 +1,8 @@
+# 原始资料与无关文件（不纳入仓库）
+*.pdf
+*.pptx
+.DS_Store
+__MACOSX/
+output/
+pptx_extracted/
+.claude/

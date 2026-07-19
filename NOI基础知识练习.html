@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOI 2026 基础知识练习系统</title>
+<style>
+  :root{
+    --bg:#0f172a;
+    --bg-grad1:#1e293b;
+    --bg-grad2:#0f172a;
+    --card:#ffffff;
+    --card-2:#f8fafc;
+    --text:#0f172a;
+    --text-soft:#475569;
+    --text-mute:#94a3b8;
+    --border:#e2e8f0;
+    --primary:#4f46e5;
+    --primary-d:#4338ca;
+    --primary-l:#eef2ff;
+    --ok:#16a34a;
+    --ok-l:#dcfce7;
+    --bad:#dc2626;
+    --bad-l:#fee2e2;
+    --warn:#d97706;
+    --accent:#0ea5e9;
+    --radius:16px;
+    --shadow:0 10px 30px -12px rgba(2,6,23,.25);
+    --shadow-sm:0 2px 8px -2px rgba(2,6,23,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,var(--bg-grad1),var(--bg-grad2));
+    min-height:100vh;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  .wrap{
+    max-width:860px;
+    margin:0 auto;
+    padding:28px 18px 60px;
+  }
+  /* ---------- Header ---------- */
+  .app-header{
+    text-align:center;
+    color:#fff;
+    margin-bottom:22px;
+  }
+  .app-header .badge{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.18);
+    padding:5px 12px;
+    border-radius:999px;
+    margin-bottom:12px;
+    backdrop-filter:blur(6px);
+  }
+  .app-header h1{
+    font-size:clamp(24px,4vw,34px);
+    margin:0 0 6px;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .app-header p{
+    margin:0;
+    color:#cbd5e1;
+    font-size:14px;
+  }
+  /* ---------- Card ---------- */
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px 24px;
+  }
+  /* ---------- Start screen ---------- */
+  .start-intro{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+    margin:18px 0 6px;
+  }
+  .stat{
+    background:var(--card-2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+    text-align:center;
+  }
+  .stat .num{font-size:24px;font-weight:800;color:var(--primary)}
+  .stat .lbl{font-size:12px;color:var(--text-mute);margin-top:2px}
+  .section-title{
+    font-size:13px;
+    font-weight:700;
+    color:var(--text-soft);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin:24px 0 10px;
+  }
+  .preset-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px;
+  }
+  .preset{
+    border:2px solid var(--border);
+    border-radius:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    transition:.15s;
+    background:#fff;
+    text-align:left;
+    font:inherit;
+    color:inherit;
+  }
+  .preset:hover{border-color:var(--primary);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .preset.active{border-color:var(--primary);background:var(--primary-l)}
+  .preset .pt{font-weight:700;font-size:15px}
+  .preset .pd{font-size:12.5px;color:var(--text-mute);margin-top:3px}
+  .opt-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .seg{
+    display:inline-flex;
+    background:var(--card-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:3px;
+    gap:3px;
+  }
+  .seg button{
+    border:0;background:transparent;padding:8px 14px;border-radius:8px;cursor:pointer;
+    font:inherit;color:var(--text-soft);font-size:13.5px;font-weight:600;
+  }
+  .seg button.active{background:#fff;color:var(--primary);box-shadow:var(--shadow-sm)}
+  .btn-primary{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--primary);color:#fff;border:0;border-radius:12px;
+    padding:14px 28px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;
+    transition:.15s;box-shadow:0 8px 20px -8px rgba(79,70,229,.6);
+    width:100%;margin-top:24px;
+  }
+  .btn-primary:hover{background:var(--primary-d);transform:translateY(-1px)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-ghost{
+    background:transparent;color:var(--text-soft);border:1px solid var(--border);
+    border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;transition:.15s;
+  }
+  .btn-ghost:hover{background:var(--card-2);color:var(--text)}
+  .hidden{display:none!important}
+  /* ---------- Quiz screen ---------- */
+  .quiz-topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    color:#fff;margin-bottom:14px;gap:12px;flex-wrap:wrap;
+  }
+  .progress-wrap{flex:1;min-width:180px}
+  .progress-track{height:8px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#818cf8,#4f46e5);border-radius:999px;transition:width .3s;width:0}
+  .progress-meta{font-size:12.5px;color:#cbd5e1;margin-top:6px;display:flex;justify-content:space-between}
+  .timer{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;padding:6px 14px;font-variant-numeric:tabular-nums;font-size:14px;color:#fff;
+  }
+  .timer .dot{width:8px;height:8px;border-radius:50%;background:#34d399;animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .qtype-tag{
+    display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;
+    margin-bottom:10px;letter-spacing:.04em;
+  }
+  .tag-single{background:var(--primary-l);color:var(--primary-d)}
+  .tag-multi{background:#fef3c7;color:var(--warn)}
+  .q-num{font-size:13px;color:var(--text-mute);font-weight:600}
+  .q-text{font-size:18px;font-weight:600;margin:6px 0 18px;line-height:1.55}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .option{
+    display:flex;align-items:flex-start;gap:12px;
+    border:2px solid var(--border);border-radius:12px;padding:13px 15px;cursor:pointer;
+    transition:.12s;background:#fff;font-size:15px;
+  }
+  .option:hover{border-color:#c7d2fe;background:var(--card-2)}
+  .option .mark{
+    flex:0 0 28px;height:28px;border-radius:8px;border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-soft);
+    background:#fff;transition:.12s;font-size:14px;
+  }
+  .option.selected{border-color:var(--primary);background:var(--primary-l)}
+  .option.selected .mark{background:var(--primary);color:#fff;border-color:var(--primary)}
+  /* feedback states */
+  .option.correct{border-color:var(--ok);background:var(--ok-l)}
+  .option.correct .mark{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .option.wrong{border-color:var(--bad);background:var(--bad-l)}
+  .option.wrong .mark{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .option .opt-txt{flex:1;padding-top:2px}
+  .feedback{
+    margin-top:16px;padding:14px 16px;border-radius:12px;font-size:14px;
+    border-left:4px solid;display:none;
+  }
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--ok-l);border-color:var(--ok);color:#14532d}
+  .feedback.no{background:var(--bad-l);border-color:var(--bad);color:#7f1d1d}
+  .feedback b{display:block;margin-bottom:3px}
+  .quiz-nav{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:22px;
+  }
+  .quiz-nav .right{display:flex;gap:10px}
+  .nav-btn{
+    border:1px solid var(--border);background:#fff;color:var(--text-soft);
+    border-radius:10px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;transition:.15s;
+  }
+  .nav-btn:hover:not(:disabled){background:var(--card-2);color:var(--text)}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed}
+  .nav-btn.submit{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .nav-btn.submit:hover{background:var(--primary-d)}
+  .qmeta-cat{font-size:12px;color:var(--text-mute);margin-bottom:14px}
+  /* ---------- Result screen ---------- */
+  .result-hero{text-align:center;padding:10px 0 6px}
+  .result-score{
+    font-size:54px;font-weight:800;line-height:1;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .result-label{color:var(--text-mute);font-size:14px;margin-top:6px}
+  .result-pass{display:inline-block;margin-top:10px;font-weight:700;font-size:15px;padding:5px 16px;border-radius:999px}
+  .pass-yes{background:var(--ok-l);color:#14532d}
+  .pass-no{background:var(--bad-l);color:#7f1d1d}
+  .result-stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 6px;text-align:center;
+  }
+  .result-stats .rs{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:14px 8px}
+  .result-stats .rs .n{font-size:22px;font-weight:800}
+  .result-stats .rs .t{font-size:11.5px;color:var(--text-mute);margin-top:2px}
+  .result-actions{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  /* review */
+  .review-list{margin-top:18px;display:flex;flex-direction:column;gap:14px}
+  .review-item{border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+  .review-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+  .review-item.r-ok::before{background:var(--ok)}
+  .review-item.r-no::before{background:var(--bad)}
+  .review-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+  .review-head .rq{font-weight:600;font-size:15px;flex:1}
+  .review-status{flex:0 0 auto;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+  .review-status.s-ok{background:var(--ok-l);color:#14532d}
+  .review-status.s-no{background:var(--bad-l);color:#7f1d1d}
+  .review-item .options{gap:8px}
+  .review-item .option{cursor:default;padding:10px 12px;font-size:14px}
+  .review-exp{margin-top:12px;padding:12px 14px;background:var(--card-2);border-radius:10px;font-size:13.5px;color:var(--text-soft);border-left:3px solid var(--accent)}
+  .review-exp b{color:var(--text)}
+  /* filter chips on review */
+  .review-filter{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+  .chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text-soft);cursor:pointer;transition:.12s}
+  .chip:hover{border-color:var(--primary)}
+  .chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  footer{margin-top:30px;color:#94a3b8;font-size:12px;text-align:center;line-height:1.7}
+  footer code{background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px}
+  @media(max-width:560px){
+    .result-stats{grid-template-columns:repeat(2,1fr)}
+    .card{padding:20px 16px}
+    .q-text{font-size:16.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="app-header">
+    <span class="badge">NOI · 笔试练习</span>
+    <h1>NOI 2026 基础知识练习系统</h1>
+    <p>题源：NOI 2026 基础知识题库（审订日期 2026-06-15）</p>
+  </div>
+
+  <!-- ============ START SCREEN ============ -->
+  <section id="screen-start" class="card">
+    <div class="start-intro">
+      <div class="stat"><div class="num" id="statSingle">0</div><div class="lbl">单选题</div></div>
+      <div class="stat"><div class="num" id="statMulti">0</div><div class="lbl">多选题</div></div>
+      <div class="stat"><div class="num">2</div><div class="lbl">知识模块</div></div>
+      <div class="stat"><div class="num">100</div><div class="lbl">正式笔试满分</div></div>
+    </div>
+
+    <div class="section-title">① 选择练习方案</div>
+    <div class="preset-grid" id="presetGrid"></div>
+
+    <div class="section-title">② 判题方式</div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="practice" class="active">练习模式 · 即时反馈</button>
+      <button data-mode="exam">考试模式 · 交卷批改</button>
+    </div>
+
+    <div class="section-title">③ 题目顺序</div>
+    <div class="seg" id="orderSeg">
+      <button data-order="random" class="active">随机</button>
+      <button data-order="seq">按顺序</button>
+    </div>
+
+    <button class="btn-primary" id="startBtn">开始练习 →</button>
+  </section>
+
+  <!-- ============ QUIZ SCREEN ============ -->
+  <section id="screen-quiz" class="hidden">
+    <div class="quiz-topbar">
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-meta">
+          <span id="progressText">第 0 / 0 题</span>
+          <span id="answeredText">已答 0</span>
+        </div>
+      </div>
+      <div class="timer"><span class="dot"></span><span id="timerText">00:00</span></div>
+    </div>
+
+    <div class="card">
+      <div class="qmeta-cat" id="qCat"></div>
+      <span class="qtype-tag" id="qType"></span>
+      <span class="q-num" id="qNum"></span>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="qOptions"></div>
+      <div class="feedback" id="qFeedback"></div>
+
+      <div class="quiz-nav">
+        <button class="nav-btn" id="prevBtn">← 上一题</button>
+        <div class="right">
+          <button class="nav-btn" id="skipBtn">跳过</button>
+          <button class="nav-btn" id="nextBtn">下一题 →</button>
+          <button class="nav-btn submit hidden" id="submitBtn">交卷</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT SCREEN ============ -->
+  <section id="screen-result" class="card hidden">
+    <div class="result-hero">
+      <div class="result-score" id="resultScore">0</div>
+      <div class="result-label">满分 <span id="resultTotal">0</span> 分</div>
+      <div id="resultPass"></div>
+    </div>
+    <div class="result-stats">
+      <div class="rs"><div class="n" id="rsRight" style="color:var(--ok)">0</div><div class="t">答对</div></div>
+      <div class="rs"><div class="n" id="rsWrong" style="color:var(--bad)">0</div><div class="t">答错</div></div>
+      <div class="rs"><div class="n" id="rsBlank" style="color:var(--text-mute)">0</div><div class="t">未答</div></div>
+      <div class="rs"><div class="n" id="rsRate" style="color:var(--primary)">0%</div><div class="t">正确率</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-ghost" id="retrySameBtn">再做一遍（同套题）</button>
+      <button class="btn-ghost" id="retryWrongBtn">只练错题</button>
+      <button class="btn-ghost" id="homeBtn">返回首页</button>
+    </div>
+
+    <div class="section-title" style="margin-top:28px">答题回顾</div>
+    <div class="review-filter" id="reviewFilter">
+      <span class="chip active" data-filter="all">全部</span>
+      <span class="chip" data-filter="wrong">仅错题</span>
+      <span class="chip" data-filter="right">仅对题</span>
+    </div>
+    <div class="review-list" id="reviewList"></div>
+  </section>
+
+  <footer>
+    正式笔试共 50 题（45 单选 + 5 多选），满分 100，题目全部出自题库。<br>
+    本系统为第三方练习工具，仅供学习使用。错题建议重点复习对应知识点。
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   题库数据 —— 来源：NOI 2026 基础知识题库（2026-06-15 审订）
+   answer: 单选为选项下标(数字)，多选为下标数组
+   ============================================================ */
+const CAT_I  = "Part Ⅰ · 竞赛环境与竞赛规则";
+const CAT_II = "Part Ⅱ · 计算机常识与 NOI / IOI 历史";
+
+const QUESTIONS = [
+  /* ---------------- 单选题 Part I ---------------- */
+  {id:1, type:"single", cat:CAT_I, q:"NOI 机试使用的操作系统是？",
+    o:["Windows","macOS","Linux","UNIX"], a:2,
+    e:"题库原文：NOI 机试使用的操作系统是 Linux。"},
+  {id:2, type:"single", cat:CAT_I, q:"Linux 中为文件改名使用的命令是？",
+    o:["cp 旧 新","mv 旧文件名 新文件名","ren 旧 新","rn 旧 新"], a:1,
+    e:"mv 既能移动文件，也能为文件改名：mv <旧文件名> <新文件名>。"},
+  {id:3, type:"single", cat:CAT_I, q:"在 Linux 中返回上一级目录使用的命令是？",
+    o:["cd /","cd ..","cd -","cd ~"], a:1,
+    e:"cd .. 返回上一级目录；cd - 返回上一次所在目录；cd ~ 回主目录。"},
+  {id:4, type:"single", cat:CAT_I, q:"在 Linux 中删除当前目录下的 test 目录（及其内容）的命令是？",
+    o:["rm test","del test","rm -r test","rmdir test"], a:2,
+    e:"删除目录需递归删除：rm -r test。rmdir 只能删空目录。"},
+  {id:5, type:"single", cat:CAT_I, q:"当前目录下有可执行文件 a.out，执行它的命令是？",
+    o:["a.out","run a.out","./a.out","exec a.out"], a:2,
+    e:"Linux 中执行当前目录下的程序需显式指定路径：./a.out。"},
+  {id:6, type:"single", cat:CAT_I, q:"使用高级语言编写的程序称之为？",
+    o:["目标程序","可执行程序","源程序","机器程序"], a:2,
+    e:"题库原文：使用高级语言编写的程序称之为源程序。"},
+  {id:7, type:"single", cat:CAT_I, q:"在 NOI Linux 系统中可以用来调试程序的程序是？",
+    o:["gdb","gcc","make","vim"], a:0,
+    e:"gdb 是 GNU 调试器，用于调试 C/C++ 程序。"},
+  {id:8, type:"single", cat:CAT_I, q:"在 Linux 系统中，文件夹中的文件可以与该文件夹同名吗？",
+    o:["不可以，会冲突","可以","仅在根目录下可以","仅大小写不同时可以"], a:1,
+    e:"题库原文：文件夹中的文件可以与该文件夹同名。"},
+  {id:9, type:"single", cat:CAT_I, q:"Linux 系统中杀掉名为 test 的后台进程的命令是？",
+    o:["kill test","killall test","stop test","end test"], a:1,
+    e:"killall 通过进程名杀进程；kill 需要进程号 PID。"},
+  {id:10, type:"single", cat:CAT_I, q:"Linux 系统中可以查看隐藏文件的命令是？",
+    o:["ls -l","ls -h","ls -a","ls -r"], a:2,
+    e:"ls -a 显示所有文件（含以 . 开头的隐藏文件）。"},
+  {id:11, type:"single", cat:CAT_I, q:"Linux 系统中编译 C++ 程序的编译器是？",
+    o:["gcc","g++","javac","cpp"], a:1,
+    e:"g++ 是 GNU 的 C++ 编译器。gcc 主要用于 C。"},
+  {id:12, type:"single", cat:CAT_I, q:"将当前目录下的文件名打印到 tmp 文件中的命令是？",
+    o:["ls >> tmp","ls | tmp","ls > tmp","ls to tmp"], a:2,
+    e:"输出重定向：ls > tmp 把 ls 的结果写入 tmp。"},
+  {id:13, type:"single", cat:CAT_I, q:"测量当前目录下程序 test 运行时间的命令是？",
+    o:["time ./test","clock test","./test -t","timer test"], a:0,
+    e:"time 命令测量后续命令的运行时间：time ./test。"},
+  {id:14, type:"single", cat:CAT_I, q:"vim 编辑器中，强制退出且不保存修改应当输入？",
+    o:[":q",":q!",":wq",":x"], a:1,
+    e:":q! 强制退出不保存；:q 仅在无修改时可退出。"},
+  {id:15, type:"single", cat:CAT_I, q:"vim 编辑器中，定位到文件中第 12 行应当输入？",
+    o:["/12",":12","goto 12","G12"], a:1,
+    e:":12 跳转到第 12 行；/12 是查找字符串“12”。"},
+  {id:16, type:"single", cat:CAT_I, q:"vim 编辑器中，在文件中查找字符串“12”应当输入？",
+    o:[":12","/12","?12;","find 12"], a:1,
+    e:"/字符串 向下查找；?字符串 向上查找。"},
+  {id:17, type:"single", cat:CAT_I, q:"使用 g++ 编译 C++ 程序时，生成调试信息的命令行选项是？",
+    o:["-Wall","-g","-c","-o"], a:1,
+    e:"-g 生成调试信息，供 gdb 使用。"},
+  {id:18, type:"single", cat:CAT_I, q:"使用 g++ 编译 C++ 程序时，生成所有警告信息的命令行选项是？",
+    o:["-Wall","-warn","-W","-a"], a:0,
+    e:"-Wall 打开常用警告。"},
+  {id:19, type:"single", cat:CAT_I, q:"使用 g++ 编译 C++ 程序时，只编译生成目标文件的命令行选项是？",
+    o:["-o","-c","-g","-Wall"], a:1,
+    e:"-c 只编译不链接，生成 .o 目标文件。"},
+  {id:20, type:"single", cat:CAT_I, q:"使用 g++ 编译 C++ 程序时，指定输出文件名的命令行选项是？",
+    o:["-out","-o","-O","-f"], a:1,
+    e:"-o 后接输出文件名，如 g++ a.cpp -o a。"},
+  {id:21, type:"single", cat:CAT_I, q:"如果 C++ 程序中使用了 math.h 中的函数，用 g++ 编译时需要加入选项？",
+    o:["-lmath","-lm","-math","-lmath.h"], a:1,
+    e:"链接数学库使用 -lm。"},
+  {id:22, type:"single", cat:CAT_I, q:"Linux 系统中具有最高权限的用户是？",
+    o:["admin","sudo","root","user"], a:2,
+    e:"root 是超级用户，拥有最高权限。"},
+  {id:23, type:"single", cat:CAT_I, q:"在 Linux 的各个虚拟终端之间切换的快捷键是？",
+    o:["Ctrl+Shift+Fn","Ctrl+Alt+Fn","Alt+Fn","Ctrl+Fn"], a:1,
+    e:"Ctrl+Alt+Fn 在各虚拟终端之间切换。"},
+  {id:24, type:"single", cat:CAT_I, q:"在 NOI Linux 中，从虚拟终端切换回桌面环境的快捷键是？",
+    o:["Ctrl+Alt+F1","Alt+F2","Ctrl+Shift+D","Alt+Tab"], a:1,
+    e:"题库原文：Alt+F2 从虚拟终端切换回桌面环境。"},
+  {id:25, type:"single", cat:CAT_I, q:"在 NOI Linux 中默认使用的 Shell 是？",
+    o:["zsh","csh","bash","fish"], a:2,
+    e:"NOI Linux 默认 Shell 为 bash。"},
+  {id:26, type:"single", cat:CAT_I, q:"在 Linux 中查看当前系统中的进程，使用的命令是？",
+    o:["ps","ls","top","proc"], a:0,
+    e:"ps 报告当前进程快照。题库亦用 ps 查看 CPU 利用率。"},
+  {id:27, type:"single", cat:CAT_I, q:"在 Linux 中查看进程的 CPU 利用率，使用的命令是？",
+    o:["cpu","ps","top -c","free"], a:1,
+    e:"题库原文：查看进程的 CPU 利用率使用 ps。"},
+  {id:28, type:"single", cat:CAT_I, q:"在终端运行自己的程序进入死循环时，可以终止程序的命令是？",
+    o:["Ctrl-D","Ctrl-C","Ctrl-Z","Alt-F4"], a:1,
+    e:"Ctrl-C 发送中断信号终止前台程序。"},
+  {id:29, type:"single", cat:CAT_I, q:"a.out 从标准输入读取数据，输入数据保存在 1.in 中，测试程序的命令是？",
+    o:["./a.out > 1.in","./a.out 1.in","./a.out < 1.in","./a.out << 1.in"], a:2,
+    e:"输入重定向 <：./a.out < 1.in 把 1.in 作为标准输入。"},
+  {id:30, type:"single", cat:CAT_I, q:"prog_1 输出到标准输出，将结果保存到 1.out 的命令是？",
+    o:["./prog_1 < 1.out","./prog_1 > 1.out","./prog_1 | 1.out","./prog_1 to 1.out"], a:1,
+    e:"输出重定向 >：./prog_1 > 1.out。"},
+  {id:31, type:"single", cat:CAT_I, q:"使用主机“重启”键强行重新启动计算机，可能会造成的后果是？",
+    o:["没有任何影响","文件系统损坏","内存自动清空，无影响","仅时间被重置"], a:1,
+    e:"强行重启可能导致文件系统损坏。"},
+  {id:32, type:"single", cat:CAT_I, q:"在 Linux 系统中，用于查看文件大小的命令是？",
+    o:["ls -l","size","stat -f","du -a"], a:0,
+    e:"题库原文：查看文件的大小使用 ls -l（长格式列出含大小等信息）。"},
+  {id:33, type:"single", cat:CAT_I,
+    q:"当前目录中有文件：a（rw-r--r--）、a.cpp（rw-r--r--）、a.sh（rwx------）。其中可以执行的文件是？",
+    o:["a","a.cpp","a.sh","都可以"], a:2,
+    e:"只有 a.sh 的权限中有 x（执行）位，故可执行。"},
+  {id:34, type:"single", cat:CAT_I, q:"NOI 系列赛中对程序源文件大小的默认限制是？",
+    o:["小于 50KB","小于 100KB","小于 1MB","无限制"], a:1,
+    e:"题库原文：源文件大小默认限制为小于 100KB。"},
+  {id:35, type:"single", cat:CAT_I, q:"如无另行说明，评测系统中对程序使用内存的限制是？",
+    o:["256MB","512MB","以硬件资源为限","1GB"], a:2,
+    e:"题库原文：内存限制以硬件资源为限。"},
+  {id:36, type:"single", cat:CAT_I, q:"终止一个失去响应的进程（进程号为 $pid）的命令是？",
+    o:["kill $pid","stop $pid","killall $pid","halt $pid"], a:0,
+    e:"kill 通过 PID 终止进程：kill $pid。"},
+  {id:37, type:"single", cat:CAT_I, q:"Linux 中是否区分文件和目录名称的大小写？",
+    o:["否","是","仅目录区分","仅文件区分"], a:1,
+    e:"Linux 区分大小写：FILE 与 file 是不同文件。"},
+  {id:38, type:"single", cat:CAT_I, q:"选手在 NOI 机试过程中是否禁止使用网络？",
+    o:["否，可自由使用","是，禁止使用","仅可访问内网","仅可查文档"], a:1,
+    e:"题库原文：选手在 NOI 机试过程中禁止使用网络。"},
+  {id:39, type:"single", cat:CAT_I, q:"为源代码文件 my.cpp 创建备份 mycpp.bak，使用的命令是？",
+    o:["cp my.cpp mycpp.bak","mv my.cpp mycpp.bak","backup my.cpp","copy my.cpp mycpp.bak"], a:0,
+    e:"cp 复制文件：cp my.cpp mycpp.bak。"},
+  {id:40, type:"single", cat:CAT_I, q:"考试过程中出现系统死机或崩溃，选手应当采取的措施是？",
+    o:["自行重启计算机","举手示意监考人员处理","强行关机拔电源","继续等待"], a:1,
+    e:"应举手示意监考人员处理，由工作人员确认并记录。"},
+  {id:41, type:"single", cat:CAT_I, q:"提交的答案程序中包含 NOI 明确禁止使用的代码，后果是？",
+    o:["警告一次","扣 5 分","本题成绩以 0 分计算","不影响成绩"], a:2,
+    e:"题库原文：包含禁止使用的代码，本题成绩以 0 分计算。"},
+  {id:42, type:"single", cat:CAT_I, q:"NOI 考试对 C++ 语言标准模板库（STL）的使用有限制吗？",
+    o:["没有，可自由使用","有，部分禁用","仅禁用某些容器","仅限离线使用"], a:0,
+    e:"题库原文：对 STL 的使用没有限制。"},
+  {id:43, type:"single", cat:CAT_I, q:"NOI 考试对 C++ 语言的使用有限制吗？",
+    o:["有","没有","仅版本限制","仅编译选项限制"], a:0,
+    e:"题库原文：对 C++ 语言的使用有限制（注意与 STL 区分）。"},
+  {id:44, type:"single", cat:CAT_I, q:"名为 FILE 的文件和名为 File 的文件在 Linux 系统中被认为是？",
+    o:["相同的文件","不同的文件","系统会报错","同一文件的两个别名"], a:1,
+    e:"Linux 区分大小写，FILE 与 File 是不同文件。"},
+  {id:45, type:"single", cat:CAT_I, q:"在 NOI 正式考试中如何登录自己的比赛用机？",
+    o:["使用自己的常用账号","使用考前工作人员下发的账户及密码","任意账号即可","用 U 盘导入账号"], a:1,
+    e:"题库原文：使用考前工作人员下发的账户及密码登录。"},
+  {id:46, type:"single", cat:CAT_I, q:"选手答案文件保存的目录是？",
+    o:["任意目录","桌面","选手目录下和考题名称符合的目录","U 盘"], a:2,
+    e:"题库原文：保存在选手目录下和考题名称符合的目录。"},
+  {id:47, type:"single", cat:CAT_I, q:"选手答案的文件名大小写错误，成绩会怎样？",
+    o:["不影响成绩","扣部分分","0 分","提示重交"], a:2,
+    e:"文件名大小写错误会导致评测找不到文件，本题 0 分。"},
+  {id:48, type:"single", cat:CAT_I, q:"选手提交的源代码文件名有何要求？",
+    o:["任意命名即可","试题名称加后缀构成，一律使用小写","必须用大写","必须包含学号"], a:1,
+    e:"题库原文：源程序文件名由试题名称加后缀构成，一律使用小写。"},
+  {id:49, type:"single", cat:CAT_I, q:"在 NOI 考试中，C++ 源文件的扩展名规定为？",
+    o:["c","cpp","cc","cxx"], a:1,
+    e:"C++ 源文件扩展名为 cpp。"},
+  {id:50, type:"single", cat:CAT_I, q:"发现鼠标或其他硬件设备有问题，选手可以？",
+    o:["自行拆修","请工作人员更换","忽略继续作答","申请退赛"], a:1,
+    e:"应请工作人员更换。"},
+  {id:51, type:"single", cat:CAT_I, q:"测试点时间限制的含义是指？",
+    o:["程序最多可使用的内存","题目允许程序运行所耗用的用户时间总和的上限值","程序编译时间上限","程序输入数据的规模上限"], a:1,
+    e:"题库原文：测试点时间限制是程序运行所耗用的用户时间总和的上限值。"},
+  {id:52, type:"single", cat:CAT_I, q:"什么情况下选手可以申请延长考试时间？",
+    o:["题目太难","机器出现故障，并由工作人员确认和记录","自己没做完","提前交卷后悔"], a:1,
+    e:"仅当机器故障且由工作人员确认记录时方可申请加时。"},
+  {id:53, type:"single", cat:CAT_I, q:"考试中选手自行重新启动机器，能否获得加时？",
+    o:["能","不能","看情况","扣分后可加时"], a:1,
+    e:"自行重启不能获得加时，且属违规行为。"},
+  {id:54, type:"single", cat:CAT_I, q:"考试太简单，能提前离开考场吗？",
+    o:["不能，必须等到结束","能","需要监考同意","仅最后 30 分钟可以"], a:1,
+    e:"题库原文：考试太简单，可以提前离开。"},
+  {id:55, type:"single", cat:CAT_I, q:"离开考场后，发现还有一个问题没改，能返回考场继续修改吗？",
+    o:["能","不能","只要没结束就能","需领队同意"], a:1,
+    e:"离开考场后不能再返回修改。"},
+  {id:56, type:"single", cat:CAT_I, q:"超出申诉时间的申诉是否会被受理？",
+    o:["会","否","视情况而定","需补交费用后受理"], a:1,
+    e:"超出申诉时间的申诉不予受理。"},
+  {id:57, type:"single", cat:CAT_I, q:"选手丢失密码条，会扣几分？",
+    o:["不扣分","扣 3 分","扣 5 分","扣 10 分"], a:2,
+    e:"题库原文：丢失密码条扣 5 分。"},
+  {id:58, type:"single", cat:CAT_I, q:"选手程序在某测试点上的运行时间仅比时限多 0.005 秒，算不算超时？",
+    o:["不算，误差范围内","算","看测试点而定","由评测员决定"], a:1,
+    e:"超过时限即为超时，该测试点不得分。"},
+  {id:59, type:"single", cat:CAT_I, q:"在评测时，如果某测试点的运行内存超过内存限制，则？",
+    o:["仅扣部分分","程序不能正常运行，该测试点得 0 分","自动重试一次","忽略该测试点"], a:1,
+    e:"超内存则程序不能正常运行，该测试点 0 分。"},
+  {id:60, type:"single", cat:CAT_I, q:"在 NOI 机试中，以下编程语言中允许选手使用的是？",
+    o:["Java","Python","C++","Pascal"], a:2,
+    e:"NOI 机试允许使用 C++。"},
+  {id:61, type:"single", cat:CAT_I, q:"在 NOI 赛场上，选手自测时可以使用的指定工具是？",
+    o:["gdb","SelfEval","ar","valgrind"], a:1,
+    e:"指定自测工具为 SelfEval。"},
+  {id:62, type:"single", cat:CAT_I, q:"在 NOI 赛场上，选手使用 SelfEval 得到的自测结果是否可以作为正式成绩？",
+    o:["可以","否","需领队确认后可以","仅作参考但计入"], a:1,
+    e:"SelfEval 自测结果不作为正式成绩。"},
+  {id:63, type:"single", cat:CAT_I, q:"在监考人员宣布 NOI 机试开始之前，是否允许选手登录系统、翻阅试卷或触摸键盘鼠标？",
+    o:["允许，便于准备","否，不允许","仅可触摸鼠标","仅可翻阅试卷"], a:1,
+    e:"开始前不允许登录系统、翻阅试卷或触摸输入设备。"},
+  {id:64, type:"single", cat:CAT_I, q:"在 NOI 系列考试中，由于文件名不正确导致被判 0 分，提出复评请求，会被接受吗？",
+    o:["会","不会","需领队担保后接受","补交后接受"], a:1,
+    e:"文件名/目录名/路径不正确被判 0 分，复评请求均不予接受。"},
+
+  /* ---------------- 单选题 Part II ---------------- */
+  {id:65, type:"single", cat:CAT_II, q:"一个完整的计算机系统应包括？",
+    o:["主机和外部设备","硬件系统和软件系统","运算器和控制器","操作系统和应用软件"], a:1,
+    e:"完整的计算机系统 = 硬件系统 + 软件系统。"},
+  {id:66, type:"single", cat:CAT_II, q:"目前微型计算机中采用的逻辑组件是？",
+    o:["电子管","晶体管","中小规模集成电路","大规模和超大规模集成电路"], a:3,
+    e:"现代微型机采用大规模和超大规模集成电路。"},
+  {id:67, type:"single", cat:CAT_II, q:"在信息领域，IT 的常见含义是？",
+    o:["互联网技术","信息技术","智能终端","集成电信"], a:1,
+    e:"IT = Information Technology，信息技术。"},
+  {id:68, type:"single", cat:CAT_II, q:"计算机中央处理器的英文简称为？",
+    o:["CPU","GPU","MPU","ALU"], a:0,
+    e:"CPU = Central Processing Unit。"},
+  {id:69, type:"single", cat:CAT_II, q:"计算机内存储器的一般作用是？",
+    o:["长期保存数据","存放当前 CPU 正在运行或使用的程序和数据","存放 BIOS","加速图形渲染"], a:1,
+    e:"内存存放当前 CPU 正在运行的程序和数据。"},
+  {id:70, type:"single", cat:CAT_II, q:"用来全面管理计算机硬件和软件资源的软件叫？",
+    o:["编译器","操作系统","数据库","驱动程序"], a:1,
+    e:"操作系统管理全部软硬件资源。"},
+  {id:71, type:"single", cat:CAT_II, q:"LAN 在计算机科学技术领域的常见含义是？",
+    o:["广域网","局域网","城域网","互联网"], a:1,
+    e:"LAN = Local Area Network，局域网。"},
+  {id:72, type:"single", cat:CAT_II, q:"在计算机系统中，bit 的中文含义是？",
+    o:["字节","二进制位","字","字符"], a:1,
+    e:"bit = 二进制位，是最小信息单位。"},
+  {id:73, type:"single", cat:CAT_II, q:"ASCII 的含义是？",
+    o:["美国信息交换标准代码","国际标准字符编码","高级数据加密标准","自动化信息处理系统"], a:0,
+    e:"ASCII = American Standard Code for Information Interchange。"},
+  {id:74, type:"single", cat:CAT_II, q:"在计算机术语中经常用 RAM 表示？",
+    o:["只读存储器","随机存取存储器","高速缓存","可编程存储器"], a:1,
+    e:"RAM = Random Access Memory，随机存取存储器。"},
+  {id:75, type:"single", cat:CAT_II, q:"RAM 存储器在断电后，其中的数据？",
+    o:["不会变化","会变化（丢失）","自动备份","转存到硬盘"], a:1,
+    e:"RAM 是易失性存储器，断电后数据丢失。"},
+  {id:76, type:"single", cat:CAT_II, q:"ROM 存储器在断电后，其中的数据？",
+    o:["会变化","不会变化","部分丢失","被加密"], a:1,
+    e:"ROM 是非易失性存储器，断电后数据不丢失。"},
+  {id:77, type:"single", cat:CAT_II, q:"现代计算机所应用的存储程序原理是谁提出的？",
+    o:["图灵","冯·诺依曼","香农","比尔·盖茨"], a:1,
+    e:"存储程序原理由冯·诺依曼提出（冯·诺依曼体系结构）。"},
+  {id:78, type:"single", cat:CAT_II, q:"计算机内所有的信息都是以什么形式表示的？",
+    o:["十进制数码","二进制数码","十六进制数码","八进制数码"], a:1,
+    e:"计算机内部一切信息均以二进制数码表示。"},
+  {id:79, type:"single", cat:CAT_II, q:"计算机直接识别和执行的语言是？",
+    o:["机器语言","汇编语言","高级语言","自然语言"], a:0,
+    e:"计算机直接执行机器语言（二进制指令）。"},
+  {id:80, type:"single", cat:CAT_II, q:"Linux 是一个怎样的操作系统？",
+    o:["闭源商业","开源（源码可免费获得）","仅供服务器","嵌入式专用"], a:1,
+    e:"Linux 是开源操作系统，源码可免费获得。"},
+  {id:81, type:"single", cat:CAT_II, q:"NOI 的中文含义是？",
+    o:["全国计算机等级考试","全国青少年信息学奥林匹克竞赛","国际信息学奥林匹克","中国信息学联赛"], a:1,
+    e:"NOI = 全国青少年信息学奥林匹克竞赛。"},
+  {id:82, type:"single", cat:CAT_II, q:"计算机的字长为 64 位，表示它能作为一个整体进行传送的数据长度可为？",
+    o:["4 个字节","8 个字节","16 个字节","64 个字节"], a:1,
+    e:"64 位 = 8 字节（1 字节 = 8 位）。"},
+  {id:83, type:"single", cat:CAT_II, q:"一个字节由相邻的几个二进制位组成？",
+    o:["4","8","16","32"], a:1,
+    e:"1 字节 = 8 个二进制位。"},
+  {id:84, type:"single", cat:CAT_II, q:"二进制数“10”化为十进制数是？",
+    o:["10","2","8","3"], a:1,
+    e:"二进制 10 = 1×2¹+0×2⁰ = 2。"},
+  {id:85, type:"single", cat:CAT_II, q:"与十六进制数 0xAB 等值的二进制数是？",
+    o:["10101011","10101010","11001010","10111010"], a:0,
+    e:"A=1010，B=1011，故 0xAB = 10101011。"},
+  {id:86, type:"single", cat:CAT_II, q:"Linux 中查看当前路径使用的命令是？",
+    o:["path","pwd","cwd","where"], a:1,
+    e:"pwd = print working directory，显示当前路径。"},
+  {id:87, type:"single", cat:CAT_II, q:"在 Linux 下建立目录使用的命令是？",
+    o:["mkdir","rmdir","touch","mkfs"], a:0,
+    e:"mkdir 创建目录。rmdir 删除空目录，touch 创建空文件，mkfs 创建文件系统。"},
+  {id:88, type:"single", cat:CAT_II, q:"NOI 比赛每场上机考试的比赛时间是？",
+    o:["3 小时","4 小时","5 小时","6 小时"], a:2,
+    e:"NOI 每场上机考试时间为 5 小时。"},
+  {id:89, type:"single", cat:CAT_II, q:"首届 NOI 是哪一年举办的？",
+    o:["1980","1984","1990","1995"], a:1,
+    e:"首届 NOI 于 1984 年举办。"},
+  {id:90, type:"single", cat:CAT_II, q:"第 12 届 IOI 是在哪里举办的？",
+    o:["美国","北京","日本东京","韩国首尔"], a:1,
+    e:"第 12 届 IOI（2000 年）在北京举办。"},
+  {id:91, type:"single", cat:CAT_II, q:"计算机系统内的最小信息单位是？",
+    o:["字节","位","字","扇区"], a:1,
+    e:"最小信息单位是位（bit）。"},
+
+  /* ---------------- 多选题 ---------------- */
+  {id:92, type:"multiple", cat:CAT_I, q:"vim 编辑器中，强制退出并保存修改可输入以下哪些命令？",
+    o:[":wq","ZZ",":x",":q!"], a:[0,1,2],
+    e:"题库原文：强制退出并保存修改可输入 :wq、ZZ、:x 三者之一。:q! 是不保存退出。"},
+  {id:93, type:"multiple", cat:CAT_I, q:"调试程序的方法有？",
+    o:["单步调试","使用 print 类语句打印中间结果","阅读源代码","重启计算机"], a:[0,1,2],
+    e:"调试方法包括单步调试、打印中间结果、阅读源代码。重启计算机不是调试方法。"},
+  {id:94, type:"multiple", cat:CAT_I, q:"NOI 比赛的题目类型有？",
+    o:["非交互式程序题","交互式程序题","答案提交题","选择题"], a:[0,1,2],
+    e:"题目类型：非交互式程序题、交互式程序题、答案提交题。"},
+  {id:95, type:"multiple", cat:CAT_I, q:"选手比赛中提交的有效文件类型有？",
+    o:["答案文件","源程序","测试数据文件","说明文档"], a:[0,1],
+    e:"有效文件类型：答案文件、源程序。"},
+  {id:96, type:"multiple", cat:CAT_I, q:"选手提交的程序不得进行的操作包括？",
+    o:["试图访问网络","使用 fork 或其它线程/进程生成函数","打开或创建题目规定之外的其它文件","运行其它程序"], a:[0,1,2,3],
+    e:"题库原文：禁止访问网络、使用 fork/线程、打开规定外文件、运行其它程序。"},
+  {id:97, type:"multiple", cat:CAT_I, q:"选手进入考场可以携带的物品是？",
+    o:["无存储和网络功能的笔","手表","手机","U 盘"], a:[0,1],
+    e:"可携带：无存储和网络功能的笔、手表。"},
+  {id:98, type:"multiple", cat:CAT_I, q:"选手进入考场不可以携带的物品是？",
+    o:["纸","U 盘","手机","无存储功能的手表"], a:[0,1,2],
+    e:"不可携带：纸、U 盘、手机。无存储功能的手表可以携带。"},
+  {id:99, type:"multiple", cat:CAT_I, q:"在 NOI 赛场上，将为选手提供的物品包括？",
+    o:["草稿纸","饮用水","食品","计算器"], a:[0,1,2],
+    e:"赛场提供：草稿纸、饮用水、食品。"},
+  {id:100, type:"multiple", cat:CAT_I, q:"遇到下列哪些情况可以向工作人员申请加时补偿？",
+    o:["由工作人员确认和记录的计算机硬件故障","操作系统死机","题目太难做不完","自己感觉状态不好"], a:[0,1],
+    e:"仅硬件故障或系统死机（需工作人员确认记录）可申请加时。"},
+  {id:101, type:"multiple", cat:CAT_I, q:"使用 g++ 编译 C++ 程序时，下列命令行选项与其含义对应正确的有？",
+    o:["-g：生成调试信息","-Wall：生成所有警告信息","-c：只编译生成目标文件","-o：指定输出文件名"], a:[0,1,2,3],
+    e:"四个选项含义均正确，都是 g++ 常用选项。"},
+  {id:102, type:"multiple", cat:CAT_I, q:"在 NOI 系列考试中，以下哪些情况导致被判 0 分后，提出复评请求不会被接受？",
+    o:["文件名不正确","文件目录名不正确","文件保存路径不正确","运行超时"], a:[0,1,2],
+    e:"因文件名、目录名、保存路径不正确被判 0 分，复评均不予接受。"},
+  {id:103, type:"multiple", cat:CAT_II, q:"关于计算机中数据表示与存储，下列说法正确的有？",
+    o:["计算机内所有信息都以二进制数码形式表示","一个字节由 8 个二进制位组成","RAM 断电后数据会丢失","ROM 断电后数据不会丢失"], a:[0,1,2,3],
+    e:"四项均正确，均为题库中的基本常识。"},
+  {id:104, type:"multiple", cat:CAT_II, q:"下列缩写与含义对应正确的有？",
+    o:["CPU—中央处理器","RAM—随机存取存储器","LAN—局域网","IT—信息技术"], a:[0,1,2,3],
+    e:"四组缩写对应均正确。"}
+];
+
+/* ============================================================
+   状态
+   ============================================================ */
+const LETTERS = ["A","B","C","D","E","F"];
+let state = {
+  mode:"practice",      // practice | exam
+  order:"random",       // random | seq
+  pool:[],              // 当前这轮抽出的题目（已按规则排列）
+  idx:0,                // 当前题目索引
+  answers:{},           // id -> 数组(下标)，未答为 undefined
+  judged:{},            // id -> bool(练习模式即时判题结果)
+  timer:null,
+  startTs:0,
+  currentFilter:"all"
+};
+
+/* 预设方案 */
+const PRESETS = [
+  {key:"exam",   title:"模拟考试", desc:"随机 45 单选 + 5 多选（同真题）", single:45, multi:5},
+  {key:"full",   title:"全部题目", desc:"单选 " , single:"all", multi:"all"},
+  {key:"quick",  title:"快速练习", desc:"随机 20 单选 + 5 多选", single:20, multi:5},
+  {key:"p1",     title:"仅 Part Ⅰ", desc:"竞赛环境与规则", cat:CAT_I},
+  {key:"p2",     title:"仅 Part Ⅱ", desc:"计算机常识与历史", cat:CAT_II},
+];
+
+let activePreset = "exam";
+
+/* ============================================================
+   初始化
+   ============================================================ */
+function init(){
+  // 统计
+  document.getElementById("statSingle").textContent = QUESTIONS.filter(q=>q.type==="single").length;
+  document.getElementById("statMulti").textContent  = QUESTIONS.filter(q=>q.type==="multiple").length;
+
+  // 预设按钮（动态补全描述里的数字）
+  const grid = document.getElementById("presetGrid");
+  grid.innerHTML = "";
+  PRESETS.forEach(p=>{
+    let desc = p.desc;
+    if(p.key==="full") desc = `全部 ${QUESTIONS.length} 题（单选 ${QUESTIONS.filter(q=>q.type==="single").length} + 多选 ${QUESTIONS.filter(q=>q.type==="multiple").length}）`;
+    const btn = document.createElement("button");
+    btn.className = "preset" + (p.key===activePreset ? " active":"");
+    btn.dataset.key = p.key;
+    btn.innerHTML = `<div class="pt">${p.title}</div><div class="pd">${desc}</div>`;
+    btn.onclick = ()=>{ activePreset = p.key; document.querySelectorAll(".preset").forEach(b=>b.classList.toggle("active", b.dataset.key===p.key)); };
+    grid.appendChild(btn);
+  });
+
+  // 模式
+  document.querySelectorAll("#modeSeg button").forEach(b=>{
+    b.onclick = ()=>{ document.querySelectorAll("#modeSeg button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); state.mode = b.dataset.mode; };
+  });
+  // 顺序
+  document.querySelectorAll("#orderSeg button").forEach(b=>{
+    b.onclick = ()=>{ document.querySelectorAll("#orderSeg button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); state.order = b.dataset.order; };
+  });
+
+  document.getElementById("startBtn").onclick = startQuiz;
+
+  // 回顾筛选
+  document.querySelectorAll("#reviewFilter .chip").forEach(c=>{
+    c.onclick = ()=>{ document.querySelectorAll("#reviewFilter .chip").forEach(x=>x.classList.remove("active")); c.classList.add("active"); state.currentFilter = c.dataset.filter; renderReview(); };
+  });
+
+  document.getElementById("retrySameBtn").onclick = ()=>{ buildPoolFromCurrentPreset(); goQuiz(); };
+  document.getElementById("retryWrongBtn").onclick = retryWrongOnly;
+  document.getElementById("homeBtn").onclick = goHome;
+  document.getElementById("prevBtn").onclick = ()=>{ if(state.idx>0){ state.idx--; renderQuestion(); } };
+  document.getElementById("nextBtn").onclick = nextQuestion;
+  document.getElementById("submitBtn").onclick = submitQuiz;
+  document.getElementById("skipBtn").onclick = nextQuestion;
+}
+
+/* ============================================================
+   抽题
+   ============================================================ */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildPoolFromCurrentPreset(){
+  const preset = PRESETS.find(p=>p.key===activePreset);
+  let pool = [];
+  if(preset.cat){
+    pool = QUESTIONS.filter(q=>q.cat===preset.cat);
+    if(state.order==="random") pool = shuffle(pool);
+  } else {
+    let singles = QUESTIONS.filter(q=>q.type==="single");
+    let multis  = QUESTIONS.filter(q=>q.type==="multiple");
+    if(state.order==="random"){
+      singles = shuffle(singles);
+      multis  = shuffle(multis);
+    }
+    const sCount = preset.single==="all" ? singles.length : Math.min(preset.single, singles.length);
+    const mCount = preset.multi ==="all" ? multis.length  : Math.min(preset.multi,  multis.length);
+    pool = singles.slice(0,sCount).concat(multis.slice(0,mCount));
+    if(state.order==="random") pool = shuffle(pool);
+  }
+  state.pool = pool;
+}
+
+function startQuiz(){
+  buildPoolFromCurrentPreset();
+  goQuiz();
+}
+
+function retryWrongOnly(){
+  const wrong = state.pool.filter(q=> isCorrect(q)===false);
+  if(wrong.length===0){ alert("没有错题，本轮全部答对啦！"); return; }
+  state.pool = wrong;
+  goQuiz();
+}
+
+function goQuiz(){
+  state.idx = 0;
+  state.answers = {};
+  state.judged = {};
+  show("quiz");
+  startTimer();
+  renderQuestion();
+}
+
+function goHome(){
+  stopTimer();
+  show("start");
+}
+
+/* ============================================================
+   渲染题目
+   ============================================================ */
+function renderQuestion(){
+  const q = state.pool[state.idx];
+  const total = state.pool.length;
+  // progress
+  const pct = ((state.idx)/total)*100;
+  document.getElementById("progressFill").style.width = pct+"%";
+  document.getElementById("progressText").textContent = `第 ${state.idx+1} / ${total} 题`;
+  const answered = Object.keys(state.answers).filter(id=> state.answers[id] && state.answers[id].length>0).length;
+  document.getElementById("answeredText").textContent = `已答 ${answered}`;
+
+  // header
+  document.getElementById("qCat").textContent = q.cat;
+  const tag = document.getElementById("qType");
+  if(q.type==="single"){ tag.textContent="单选题"; tag.className="qtype-tag tag-single"; }
+  else { tag.textContent="多选题（选择所有正确选项）"; tag.className="qtype-tag tag-multi"; }
+  document.getElementById("qNum").textContent = `Q${state.idx+1}`;
+  document.getElementById("qText").textContent = q.q;
+
+  // options
+  const box = document.getElementById("qOptions");
+  box.innerHTML = "";
+  const sel = state.answers[q.id] || [];
+  const judged = state.judged[q.id]; // true/false/undefined
+  q.o.forEach((txt,i)=>{
+    const div = document.createElement("div");
+    div.className = "option";
+    if(sel.includes(i)) div.classList.add("selected");
+    // 练习模式已判题 -> 显示正误色
+    if(judged!==undefined){
+      const isAns = (Array.isArray(q.a)? q.a.includes(i) : q.a===i);
+      if(isAns) div.classList.add("correct");
+      else if(sel.includes(i) && !isAns) div.classList.add("wrong");
+      div.style.pointerEvents = "none";
+    }
+    div.innerHTML = `<div class="mark">${LETTERS[i]}</div><div class="opt-txt">${txt}</div>`;
+    div.onclick = ()=> selectOption(i, q);
+    box.appendChild(div);
+  });
+
+  // feedback
+  const fb = document.getElementById("qFeedback");
+  fb.className = "feedback";
+  fb.innerHTML = "";
+  if(judged!==undefined){
+    fb.classList.add("show", judged?"ok":"no");
+    fb.innerHTML = judged
+      ? `<b>✓ 回答正确</b>${q.e}`
+      : `<b>✗ 回答错误</b>正确答案：${(Array.isArray(q.a)?q.a:[q.a]).map(i=>LETTERS[i]).join("、")}。<br>${q.e}`;
+  }
+
+  // nav buttons
+  document.getElementById("prevBtn").disabled = state.idx===0;
+  const isLast = state.idx===total-1;
+  // 考试模式：最后一题显示“交卷”并隐藏“下一题”；练习模式：始终显示“下一题/查看结果”
+  const showSubmit = isLast && state.mode==="exam";
+  document.getElementById("submitBtn").classList.toggle("hidden", !showSubmit);
+  document.getElementById("nextBtn").classList.toggle("hidden", showSubmit);
+  document.getElementById("nextBtn").textContent =
+    (state.mode==="practice" && isLast) ? "查看结果 →" : "下一题 →";
+}
+
+function selectOption(i, q){
+  if(state.judged[q.id]!==undefined) return; // 已判题不可改
+  let sel = state.answers[q.id] ? state.answers[q.id].slice() : [];
+  if(q.type==="single"){
+    sel = [i];
+  } else {
+    if(sel.includes(i)) sel = sel.filter(x=>x!==i);
+    else sel.push(i);
+  }
+  state.answers[q.id] = sel;
+
+  // 练习模式：选择即即时判题（单选立即判，多选需主动确认）
+  if(state.mode==="practice"){
+    if(q.type==="single"){
+      state.judged[q.id] = isCorrect(q);
+    } else {
+      // 多选：不自动判，提示需点击“下一题/查看结果”确认，或当全部正确选项都选满且无错选时也可判
+      // 这里采用：用户选完点下一题时统一判
+    }
+  }
+  renderQuestion();
+}
+
+function nextQuestion(){
+  const q = state.pool[state.idx];
+  // 练习模式 + 多选：离开本题时判题
+  if(state.mode==="practice" && q.type==="multiple" && state.judged[q.id]===undefined && state.answers[q.id] && state.answers[q.id].length>0){
+    state.judged[q.id] = isCorrect(q);
+    renderQuestion();
+    return; // 先让用户看到反馈
+  }
+  if(state.idx < state.pool.length-1){
+    state.idx++;
+    renderQuestion();
+  } else {
+    // 最后一题
+    if(state.mode==="practice"){
+      // 多选最后判一次
+      if(q.type==="multiple" && state.judged[q.id]===undefined && state.answers[q.id]) state.judged[q.id]=isCorrect(q);
+      finish();
+    } else {
+      submitQuiz();
+    }
+  }
+}
+
+/* ============================================================
+   判题
+   ============================================================ */
+function isCorrect(q){
+  const sel = state.answers[q.id] || [];
+  if(sel.length===0) return false;
+  const ans = Array.isArray(q.a)? q.a.slice().sort((a,b)=>a-b) : [q.a];
+  const s = sel.slice().sort((a,b)=>a-b);
+  if(ans.length!==s.length) return false;
+  return ans.every((v,i)=> v===s[i]);
+}
+
+function submitQuiz(){
+  if(!confirm("确定要交卷吗？交卷后将统一批改。")) return;
+  // 全部判题
+  state.pool.forEach(q=>{ state.judged[q.id] = isCorrect(q); });
+  finish();
+}
+
+function finish(){
+  stopTimer();
+  show("result");
+  renderResult();
+}
+
+/* ============================================================
+   结果页
+   ============================================================ */
+function renderResult(){
+  const total = state.pool.length;
+  let right=0, wrong=0, blank=0;
+  state.pool.forEach(q=>{
+    const sel = state.answers[q.id]||[];
+    if(sel.length===0){ blank++; }
+    else if(isCorrect(q)){ right++; }
+    else { wrong++; }
+  });
+  const score = Math.round(right/total*100);
+  document.getElementById("resultScore").textContent = score;
+  document.getElementById("resultTotal").textContent = 100;
+  document.getElementById("rsRight").textContent = right;
+  document.getElementById("rsWrong").textContent = wrong;
+  document.getElementById("rsBlank").textContent = blank;
+  document.getElementById("rsRate").textContent = Math.round(right/total*100)+"%";
+  const pass = document.getElementById("resultPass");
+  if(score>=60){ pass.innerHTML = `<span class="result-pass pass-yes">✓ 及格（≥60 分）</span>`; }
+  else { pass.innerHTML = `<span class="result-pass pass-no">✗ 未及格，继续加油</span>`; }
+  // 重置筛选
+  state.currentFilter = "all";
+  document.querySelectorAll("#reviewFilter .chip").forEach(x=>x.classList.toggle("active", x.dataset.filter==="all"));
+  renderReview();
+}
+
+function renderReview(){
+  const list = document.getElementById("reviewList");
+  list.innerHTML = "";
+  let items = state.pool;
+  if(state.currentFilter==="wrong") items = items.filter(q=> (state.answers[q.id]||[]).length===0 || !isCorrect(q));
+  if(state.currentFilter==="right") items = items.filter(q=> (state.answers[q.id]||[]).length>0 && isCorrect(q));
+
+  if(items.length===0){ list.innerHTML = `<div style="text-align:center;color:var(--text-mute);padding:20px">没有符合条件的题目</div>`; return; }
+
+  items.forEach((q,n)=>{
+    const sel = state.answers[q.id]||[];
+    const correct = isCorrect(q);
+    const blank = sel.length===0;
+    const wrap = document.createElement("div");
+    wrap.className = "review-item " + (correct?"r-ok":"r-no");
+    let optsHtml = "";
+    q.o.forEach((txt,i)=>{
+      const isAns = (Array.isArray(q.a)? q.a.includes(i): q.a===i);
+      let cls = "option";
+      if(isAns) cls += " correct";
+      else if(sel.includes(i)) cls += " wrong";
+      optsHtml += `<div class="${cls}"><div class="mark">${LETTERS[i]}</div><div class="opt-txt">${txt}</div></div>`;
+    });
+    const yourAns = blank ? "（未作答）" : sel.map(i=>LETTERS[i]).sort().join("、");
+    const rightAns = (Array.isArray(q.a)?q.a:[q.a]).map(i=>LETTERS[i]).sort().join("、");
+    wrap.innerHTML = `
+      <div class="review-head">
+        <div class="rq"><span style="color:var(--text-mute);font-weight:600">${n+1}.</span> ${q.q}
+          <div style="font-size:12px;color:var(--text-mute);margin-top:4px;font-weight:400">${q.type==="single"?"单选":"多选"} · ${q.cat}</div>
+        </div>
+        <span class="review-status ${correct?"s-ok":"s-no"}">${correct?"正确":(blank?"未答":"错误")}</span>
+      </div>
+      <div class="options">${optsHtml}</div>
+      <div class="review-exp"><b>你的答案：</b>${yourAns}　|　<b>正确答案：</b>${rightAns}<br>${q.e}</div>
+    `;
+    list.appendChild(wrap);
+  });
+}
+
+/* ============================================================
+   计时与页面切换
+   ============================================================ */
+function startTimer(){
+  stopTimer();
+  state.startTs = Date.now();
+  updateTimer();
+  state.timer = setInterval(updateTimer, 1000);
+}
+function stopTimer(){ if(state.timer){ clearInterval(state.timer); state.timer=null; } }
+function updateTimer(){
+  const s = Math.floor((Date.now()-state.startTs)/1000);
+  const m = String(Math.floor(s/60)).padStart(2,"0");
+  const ss = String(s%60).padStart(2,"0");
+  document.getElementById("timerText").textContent = `${m}:${ss}`;
+}
+function show(name){
+  ["start","quiz","result"].forEach(s=>{
+    document.getElementById("screen-"+s).classList.toggle("hidden", s!==name);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+init();
+</script>
+</body>
+</html>
