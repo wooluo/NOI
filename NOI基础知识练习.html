@@ -1105,7 +1105,8 @@ function renderResult(){
   document.getElementById("rsBlank").textContent = blank;
   document.getElementById("rsRate").textContent = Math.round(right/total*100)+"%";
   const pass = document.getElementById("resultPass");
-  if(score>=60){ pass.innerHTML = `<span class="result-pass pass-yes">👍 有点东西，但别骄傲！</span>`; }
+  if(score>=100){ pass.innerHTML = `<span class="result-pass pass-yes">🥇 满分！你怕不是开了挂 😎</span>`; }
+  else if(score>=60){ pass.innerHTML = `<span class="result-pass pass-yes">👍 有点东西，但别骄傲！</span>`; }
   else { pass.innerHTML = `<span class="result-pass pass-no">✗ 菜鸡，你得努力了，不然未来你连送外卖的资格都没有！</span>`; }
   // 重置筛选
   state.currentFilter = "all";
